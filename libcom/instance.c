@@ -114,7 +114,6 @@ COM_COMPAT(CoCreateInstance)(com_rclsid_t clsid, IUnknown *outer, unsigned conte
 			return r;
 		}
 	/* Create an uninitialized instance of the class */
-	IClassFactory_AddRef(cf);
 	r = IClassFactory_CreateInstance(cf, outer, riid, out);
 	IClassFactory_Release(cf);
 	return r;

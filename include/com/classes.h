@@ -70,6 +70,10 @@ struct com_classptr_struct
 		(__instance)->__intf##_iptr.self = (__instance); \
 	}
 
+# define INITIALISE_ADDREF_INTERFACE_POINTER(__instance, __intf) \
+	INITIALISE_INTERFACE_POINTER(__instance, __intf) \
+	(__instance)->__intf##_iptr.lpVtbl->AddRef((__intf *) &((__instance)->__intf##_iptr))
+
 # define DEFINE_STATIC_CLASS(__classname, __instname) \
 	static struct __classname __instname =
 	

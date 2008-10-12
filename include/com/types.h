@@ -69,10 +69,10 @@ struct com_guid_struct
 	COM_EXTERNC const com_guid_t name
 
 # if defined(__cplusplus)
-#  define IsEqualGuid(a, b) \
-	(!memcmp(&a, &b, sizeof(com_guid_t)))
+#  define com_guid_equal(a, b) \
+	(!memcmp(&(a), &(b), sizeof(com_guid_t)))
 # else
-#  define IsEqualGuid(a, b) \
+#  define com_guid_equal(a, b) \
 	(!memcmp(a, b, sizeof(com_guid_t)))
 #endif
 

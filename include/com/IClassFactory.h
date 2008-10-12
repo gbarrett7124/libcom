@@ -54,7 +54,7 @@ DECLARE_INTERFACE_(IClassFactory, IUnknown)
 	END_INTERFACE
 };
 
-# if defined(__cplusplus)
+# if !defined(CINTERFACE) && defined(__cplusplus)
 #  define IClassFactory_QueryInterface(__this, riid, out) __this->QueryInterface(riid, out)
 #  define IClassFactory_AddRef(__this) __this->AddRef()
 #  define IClassFactory_Release(__this) __this->Release()

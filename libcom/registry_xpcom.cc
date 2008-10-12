@@ -56,15 +56,29 @@ xpcom_registry_init(void)
 }
 
 com_result_t
-xpcom_register(com_rco_t *rcox, uint32_t *key)
+xpcom_register(com_rco_t *rcox)
 {
 	nsID classid;
 	
-	xpcom__convert_to_nsid(classid, *(rcox->clsid));
-	if(rcox->factory)
+	if(COM_CTX_INPROC_SERVER == (rcox->ctx & COM_CTX_INPROC_SERVER))
 	{
-		xpcom_registrar->RegisterFactory(classid, rcox->displayname, rcox->contractid, (nsIFactory *) rcox->factory);
+		xpcom__convert_to_nsid(classid, *(rcox->clsid));
+		if(rcox->factory)
+		{
+			xpcom_registrar->RegisterFactory(classid, rcox->displayname, rcox->contractid, (nsIFactory *) rcox->factory);
+		}
+		return COM_S_OK;
 	}
+	return COM_E_INVALIDARG;
+}
+
+com_result_t
+xpcom_unregister(com_rclsid_t rclsid, IClassFactory *factory)
+{
+	nsID clsid;
+	
+	xpcom__convert_to_nsid(clsid, rclsid);
+	xpcom_registrar->UnregisterFactory(clsid, (nsIFactory *) factory);
 	return COM_S_OK;
 }
 
@@ -73,10 +87,16 @@ xpcom_getclass(com_rclsid_t rclsid, com_context_t context, com_server_t *server,
 {
 	nsID clsid, iid;
 	
-	xpcom__convert_to_nsid(clsid, rclsid);
-	xpcom__convert_to_nsid(iid, riid);
-	xpcom_components->GetClassObject(clsid, iid, out);
-	return COM_S_OK;
+	(void) server;
+	
+	if(COM_CTX_INPROC_SERVER == (context & COM_CTX_INPROC_SERVER))
+	{
+		xpcom__convert_to_nsid(clsid, rclsid);
+		xpcom__convert_to_nsid(iid, riid);
+		xpcom_components->GetClassObject(clsid, iid, out);
+		return COM_S_OK;
+	}
+	return COM_E_CLASSNOTREG;
 }
 
 static void

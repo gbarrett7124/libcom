@@ -3,7 +3,10 @@
 Makefile.in
 Makefile
 test-1
+test-2
 *.la
 *.o
 *.lo
 *.so
+*.exe
+*.dll

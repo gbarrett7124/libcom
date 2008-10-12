@@ -46,9 +46,9 @@ COM_CEXPORT com_result_t COM_COMPAT(CoCreateInstanceEx)(com_rclsid_t clsid, IUnk
 COM_CEXPORT com_result_t COM_COMPAT(CoCreateInstance)(com_rclsid_t clsid, IUnknown *outer, com_context_t ctx, com_riid_t riid, void **out);
 
 COM_CEXPORT com_result_t COM_COMPAT(CoGetMalloc)(uint32_t context, IMalloc **out);
-COM_CEXPORT void *COM_COMPAT(CoTaskMemAlloc)(uint32_t size);
+COM_CEXPORT void *COM_COMPAT(CoTaskMemAlloc)(com_size_t size);
 COM_CEXPORT void COM_COMPAT(CoTaskMemFree)(void *ptr);
-COM_CEXPORT void *COM_COMPAT(CoTaskMemRealloc)(void *ptr, uint32_t newsize);
+COM_CEXPORT void *COM_COMPAT(CoTaskMemRealloc)(void *ptr, com_size_t newsize);
 
 # if defined(COM_COMPAT_MSCOM)
 

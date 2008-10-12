@@ -39,48 +39,45 @@
 
 /* Helpers for implementing classes in C */
 
-struct com_classptr_struct
-{
-	IUnknown *lpVtbl;
-	void *self;
-};
-
 # define DECLARE_CLASS(__classname) \
 	typedef struct __classname __classname; \
 	struct __classname
 
 # define DECLARE_IMPLEMENTS(__classname, __intf) \
-	struct { \
-		const struct __intf##Vtbl *lpVtbl; \
-		struct __classname *self; \
-	} __intf##_iptr;
+	union __classname##__##__intf##_union { \
+		__intf i; \
+		struct { \
+			const struct __intf##Vtbl *lpVtbl; \
+			struct __classname *self; \
+		} c; \
+	} __intf##_;
 
-# define SELF(__classname, __intf)  \
-	(struct __classname *)(((struct com_classptr_struct *) __intf)->self)
-	
-# define DECLARE_SELF(__classname, __intf) \
-	struct __classname *self = SELF(__classname, __intf);
+# define SELF(__classname, __intf, __intfptr)  \
+	(((union __classname##__intf##_union *) (__intfptr))->c.self)
+
+# define DECLARE_SELF(__classname, __intf, __intfptr) \
+	struct __classname *self = SELF(__classname, __intf, __intfptr);
 
 # define DEFINE_CLASS_INTERFACE(__classname, __intf) \
 	static const struct __intf##Vtbl __classname##_##__intf =
 
 # define INITIALISE_INTERFACE_POINTER(__instance, __intf) \
-	if(NULL == (__instance)->__intf##_iptr.self) \
+	if(NULL == (__instance)->__intf##_.c.self) \
 	{ \
-		(__instance)->__intf##_iptr.self = (__instance); \
+		(__instance)->__intf##_.c.self = (__instance); \
 	}
 
 # define INITIALISE_ADDREF_INTERFACE_POINTER(__instance, __intf) \
 	INITIALISE_INTERFACE_POINTER(__instance, __intf) \
-	(__instance)->__intf##_iptr.lpVtbl->AddRef((__intf *) &((__instance)->__intf##_iptr))
+	(__instance)->__intf##_.i.lpVtbl->AddRef(&((__instance)->__intf##_.i))
 
 # define DEFINE_STATIC_CLASS(__classname, __instname) \
 	static struct __classname __instname =
 	
 # define DEFINE_STATIC_IMPLEMENTATION(__classname, __intf) \
-	{ &__classname##_##__intf, NULL }
+	{ { &__classname##_##__intf } }
 
 # define GET_INTERFACE_POINTER(__instance, __intf) \
-	(__intf *)(&((__instance)->__intf##_iptr))
+	(&((__instance)->__intf##_.i))
 
 #endif /* !COM_INTERFACES_H_ */

@@ -96,6 +96,8 @@ COM_CEXPORT com_result_t COM_SYM(com_shutdown)(void);
 
 COM_CEXPORT com_result_t COM_SYM(com_getclass)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
 COM_CEXPORT com_result_t COM_SYM(com_register)(com_rco_t *rcox, uint32_t *key);
+COM_CEXPORT com_result_t COM_SYM(com_register_factory)(com_context_t context, IUnknown *factory, uint32_t *key);
+COM_CEXPORT com_result_t COM_SYM(com_register_inprocsrv)(com_context_t context, const char *path, uint32_t *key);
 COM_CEXPORT com_result_t COM_SYM(com_unregister)(uint32_t key);
 
 COM_CEXPORT IMalloc *COM_SYM(com_allocator)(void) COM_EXPORTED;

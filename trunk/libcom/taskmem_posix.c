@@ -44,10 +44,10 @@
 static com_result_t CoMalloc_QueryInterface(IMalloc *intf, com_riid_t iid, void **out);
 static uint32_t CoMalloc_AddRef(IMalloc *intf);
 static uint32_t CoMalloc_Release(IMalloc *intf);
-static void *CoMalloc_Alloc(IMalloc *intf, uint32_t size);
+static void *CoMalloc_Alloc(IMalloc *intf, com_size_t size);
 static void CoMalloc_Free(IMalloc *intf, void *ptr);
-static void *CoMalloc_Realloc(IMalloc *intf, void *ptr, uint32_t size);
-static size_t CoMalloc_GetSize(IMalloc *intf, void *ptr);
+static void *CoMalloc_Realloc(IMalloc *intf, void *ptr, com_size_t size);
+static com_size_t CoMalloc_GetSize(IMalloc *intf, void *ptr);
 static int CoMalloc_DidAlloc(IMalloc *intf, void *ptr);
 static void CoMalloc_HeapMinimize(IMalloc *intf);
 
@@ -98,7 +98,7 @@ COM_COMPAT(CoGetMalloc)(uint32_t context, IMalloc **out)
 }
 
 void *
-COM_COMPAT(CoTaskMemAlloc)(uint32_t size)
+COM_COMPAT(CoTaskMemAlloc)(com_size_t size)
 {
 	return CoMalloc_Alloc(NULL, size);
 }
@@ -110,7 +110,7 @@ COM_COMPAT(CoTaskMemFree)(void *ptr)
 }
 
 void *
-COM_COMPAT(CoTaskMemRealloc)(void *ptr, uint32_t newsize)
+COM_COMPAT(CoTaskMemRealloc)(void *ptr, com_size_t newsize)
 {
 	return CoMalloc_Realloc(NULL, ptr, newsize);
 }
@@ -144,7 +144,7 @@ CoMalloc_Release(IMalloc *intf)
 }
 
 static void *
-CoMalloc_Alloc(IMalloc *intf, uint32_t size)
+CoMalloc_Alloc(IMalloc *intf, com_size_t size)
 {
 	uint32_t *p;
 
@@ -179,7 +179,7 @@ CoMalloc_Free(IMalloc *intf, void *ptr)
 }
 
 static void *
-CoMalloc_Realloc(IMalloc *intf, void *ptr, size_t size)
+CoMalloc_Realloc(IMalloc *intf, void *ptr, com_size_t size)
 {
 	uint32_t *p = (uint32_t *) ptr, *q;
 	
@@ -207,7 +207,7 @@ CoMalloc_HeapMinimize(IMalloc *intf)
 	(void) intf;
 }
 
-static size_t
+static com_size_t
 CoMalloc_GetSize(IMalloc *intf, void *ptr)
 {
 	uint32_t *p = (uint32_t *) ptr;

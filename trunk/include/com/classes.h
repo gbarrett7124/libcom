@@ -46,11 +46,11 @@
 # define DECLARE_IMPLEMENTS(__classname, __intf) \
 	union __classname##__##__intf##_union { \
 		IUnknown u; \
-		__intf i; \
 		struct { \
 			const struct __intf##Vtbl *lpVtbl; \
 			struct __classname *self; \
 		} c; \
+		__intf i; \
 	} __intf##_;
 
 # define DECLARE_GENERIC_FACTORY(__classname) \

@@ -1,0 +1,14 @@
+@(#) $Id$
+
+At present, this code is incomplete; the code is being extracted from
+an old project and cleaned up in stages. In hindsight, it might have
+been quicker to re-write the whole thing from scratch. Any out-of-process
+stuff will be freshly written; the XPCOM bridge is new, the Win32 COM/registry
+bridge will is old but needs some tweaking before it's committed, the
+Mac-specific bits were only ever experimental so are getting some heavy
+treatment first.
+
+libcom started life a long time ago and has been lying around getting dusty
+for quite a while now. Hopefully the benefit of hindsight and the need to
+rework chunks of it will let me turn it into something that's useful
+to people.

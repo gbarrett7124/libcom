@@ -33,6 +33,10 @@
 #ifndef P_LIBCOM_H_
 # define P_LIBCOM_H_                   1
 
+# if defined(COM_USE_WIN32)
+#  include "p_win32.h"
+# endif
+
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -41,9 +45,6 @@
 # endif
 # ifdef HAVE_DLFCN_H
 #  include <dlfcn.h>
-# endif
-# if defined(COM_USE_WIN32)
-#  include <objbase.h>
 # endif
 # include "com/com.h"
 

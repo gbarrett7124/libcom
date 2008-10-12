@@ -30,47 +30,46 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef COM_INTERFACES_H_
-# define COM_INTERFACES_H_             1
+#ifndef P_WIN32_H_
+# define P_WIN32_H_                    1
 
-# ifndef COM_COM_H_
-#  error Do not include this file directly; use <com/com.h> instead.
-# endif
+/* This is tedious, but necessary. */
+#  define GUID_NULL Win32_GUID_NULL
 
-/* Attempt to be vaguely compatible with header files written for
- * Windows.
- */
+#  define IUnknown Win32_IUnknown
+#  define IUnknownVtbl Win32_IUnknownVtbl
+#  define IID_IUnknown Win32_IID_IUnknown
 
-# undef DECLARE_INTERFACE
-# undef DECLARE_INTERFACE_
-# define DECLARE_INTERFACE(__intf) \
-	typedef struct __intf __intf; \
-	typedef struct __intf##Vtbl __intf##Vtbl; \
-	struct __intf { \
-		const struct __intf##Vtbl *lpVtbl; \
-	}; \
-	\
-	struct __intf##Vtbl
+#  define IClassFactory Win32_IClassFactory
+#  define IClassFactoryVtbl Win32_IClassFactoryVtbl
+#  define IID_IClassFactory Win32_IID_IClassFactory
 
-# define DECLARE_INTERFACE_(__intf, __parent) \
-	DECLARE_INTERFACE(__intf)
+#  define IMalloc Win32_IMalloc
+#  define IMallocVtbl Win32_IMallocVtbl
+#  define IID_IMalloc Win32_IID_IMalloc
 
-# undef PURE
-# define PURE                          /* */
+#  define IMallocSpy Win32_IMallocSpy
+#  define IMallocSpyVtbl Win32_IMallocSpyVtbl
+#  define IID_IMallocSpy Win32_IID_IMallocSpy
 
-# undef THIS
-# undef THIS_
-# define THIS                          INTERFACE *This
-# define THIS_                         INTERFACE *This,
+#  include <objbase.h>
 
-# undef BEGIN_INTERFACE
-# undef END_INTERFACE
-# define BEGIN_INTERFACE               /* */
-# define END_INTERFACE                 /* */
+#  undef GUID_NULL
 
-# undef STDMETHOD
-# undef STDMETHOD_
-# define STDMETHOD(__name)             com_result_t (*__name)
-# define STDMETHOD_(__type,__name)     __type (*__name)
+#  undef IUnknown
+#  undef IUnknownVtbl
+#  undef IID_IUnknown
 
-#endif /* !COM_INTERFACES_H_ */
+#  undef IClassFactory
+#  undef IClassFactoryVtbl
+#  undef IID_IClassFactory
+
+#  undef IMalloc
+#  undef IMallocVtbl
+#  undef IID_IMalloc
+
+#  undef IMallocSpy
+#  undef IMallocSpyVtbl
+#  undef IID_IMallocSpy
+
+#endif /* !P_WIN32_H_ */

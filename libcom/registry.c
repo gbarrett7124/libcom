@@ -37,7 +37,7 @@
 #include "p_libcom.h"
 
 #define COM_CTX_LOCALREG \
-	(COM_CTX_LOCAL_SERVER|COM_CTX_INPROC_SERVER)
+	(COM_CTX_LOCAL_SERVER|COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER)
 
 typedef struct registry_entry_struct registry_entry_t;
 

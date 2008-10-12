@@ -30,47 +30,66 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef COM_INTERFACES_H_
-# define COM_INTERFACES_H_             1
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
 
-# ifndef COM_COM_H_
-#  error Do not include this file directly; use <com/com.h> instead.
-# endif
+#include "p_libcom.h"
 
-/* Attempt to be vaguely compatible with header files written for
- * Windows.
- */
+#if defined(COM_USE_WIN32) && !defined(COM_USE_XPCOM)
 
-# undef DECLARE_INTERFACE
-# undef DECLARE_INTERFACE_
-# define DECLARE_INTERFACE(__intf) \
-	typedef struct __intf __intf; \
-	typedef struct __intf##Vtbl __intf##Vtbl; \
-	struct __intf { \
-		const struct __intf##Vtbl *lpVtbl; \
-	}; \
-	\
-	struct __intf##Vtbl
+IMalloc *
+COM_SYM(com_allocator)(void)
+{
+	union {
+		Win32_IMalloc p;
+		IMalloc m;
+	} *d;
+	
+	if(COM_S_OK != CoGetMalloc(1, (Win32_IMalloc **) &d))
+	{
+		return NULL;
+	}
+	return &(d->m);
+}
 
-# define DECLARE_INTERFACE_(__intf, __parent) \
-	DECLARE_INTERFACE(__intf)
+com_result_t
+COM_COMPAT(CoGetMalloc)(uint32_t context, IMalloc **out)
+{
+	HRESULT r;
+	union {
+		Win32_IMalloc p;
+		IMalloc m;
+	} *d;
+	
+	if(1 != context)
+	{
+		return COM_E_INVALIDARG;
+	}
+	if(COM_S_OK != (r = CoGetMalloc(1, (Win32_IMalloc **) &d)))
+	{
+		return (com_result_t) r;
+	}
+	*out = &(d->m);
+	return COM_S_OK;
+}
 
-# undef PURE
-# define PURE                          /* */
+void *
+COM_COMPAT(CoTaskMemAlloc)(com_size_t size)
+{
+	return CoTaskMemAlloc(size);
+}
 
-# undef THIS
-# undef THIS_
-# define THIS                          INTERFACE *This
-# define THIS_                         INTERFACE *This,
+void
+COM_COMPAT(CoTaskMemFree)(void *ptr)
+{
+	return CoTaskMemFree(ptr);
+}
 
-# undef BEGIN_INTERFACE
-# undef END_INTERFACE
-# define BEGIN_INTERFACE               /* */
-# define END_INTERFACE                 /* */
+void *
+COM_COMPAT(CoTaskMemRealloc)(void *ptr, com_size_t newsize)
+{
+	return CoTaskMemRealloc(ptr, newsize);
+}
 
-# undef STDMETHOD
-# undef STDMETHOD_
-# define STDMETHOD(__name)             com_result_t (*__name)
-# define STDMETHOD_(__type,__name)     __type (*__name)
-
-#endif /* !COM_INTERFACES_H_ */
+#endif /* COM_USE_WIN32 && !COM_USE_XPCOM */

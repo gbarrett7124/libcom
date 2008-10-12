@@ -59,17 +59,26 @@ com_result_t
 com__xpcom_register(com_rco_t *rcox, IClassFactory *factory)
 {
 	nsID classid;
+	com_result_t r;
 	
-	if(COM_CTX_INPROC_SERVER == (rcox->ctx & COM_CTX_INPROC_SERVER) && NULL != factory)
+	r = COM_E_INVALIDARG;
+	/* You can register a component by pathname if it's in-process */
+	if(0 != (rcox->ctx & (COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER)) &&
+		NULL != rcox->modulepath)
+	{
+
+	}
+	/* You can only register an existing factory if it's in a running server */
+	if(COM_CTX_LOCAL_SERVER == (rcox->ctx & COM_CTX_LOCAL_SERVER) && NULL != factory)
 	{
 		xpcom__convert_to_nsid(classid, *(rcox->clsid));
 		if(rcox->factory)
 		{
 			xpcom_registrar->RegisterFactory(classid, rcox->displayname, rcox->contractid, (nsIFactory *) factory)))
-			return COM_S_OK;
+			r = COM_S_OK;
 		}
 	}
-	return COM_E_INVALIDARG;
+	return r;
 }
 
 com_result_t

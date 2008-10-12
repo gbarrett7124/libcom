@@ -77,6 +77,26 @@ if test x"${use_dl}" = x"auto" || test x"${use_dl}" = x"yes" ; then
 	use_dl=${dl_present}
 fi
 
+AC_MSG_CHECKING([whether to use Win32])
+AC_MSG_RESULT([${use_win32}])
+if test x"${use_win32}" = x"auto" || test x"${use_win32}" = x"yes" ; then
+   win32_present=yes
+   case "${host}" in
+	*-cygwin|*-mingw32)
+		LIBS="${LIBS} -lkernel32 -luser32 -ladvapi32 -lole32"
+		;;
+	*)
+		AC_CHECK_HEADER([objbase.h],,[win32_present=no])
+		if test x"${win32_present}" = x"yes" ; then
+		    AC_CHECK_LIB([ole32],[CoInitializeEx],,[win32_present=no],[-lkernel32 -luser32 -ladvapi32])
+		fi
+    esac
+    if test x"${win32_present}" = x"no" && test x"${use_win32}" = x"yes" ; then
+        AC_MSG_ERROR([Win32 requested but could not be found])
+    fi
+    use_win32="${win32_present}"
+fi
+
 AC_MSG_CHECKING([whether to use XPCOM])
 AC_MSG_RESULT([${use_xpcom}])
 if test x"${use_xpcom}" = x"auto" || test x"${use_xpcom}" = x"yes" ; then

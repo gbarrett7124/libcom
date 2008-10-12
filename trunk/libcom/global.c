@@ -71,7 +71,7 @@ COM_SYM(com_shutdown)(void)
 	pthread_mutex_lock(&initlock);
 #endif
 #ifdef COM_USE_WIN32
-	CoUnitialize();
+	CoUninitialize();
 #endif
 	initcount--;
 #ifdef COM_USE_XPCOM

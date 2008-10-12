@@ -29,10 +29,10 @@ CPPFLAGS += -DLIBCOM_INTERNAL=1 -I${top_srcdir}/include -I${top_builddir}/includ
 
 lib_LTLIBRARIES = libcom.la
 
-libcom_la_SOURCES = p_libcom.h \
+libcom_la_SOURCES = p_libcom.h p_win32.h \
 	global.c guid.c instance.c \
 	xpcom.cc \
 	registry.c registry_xpcom.cc \
-	taskmem_posix.c taskmem_xpcom.cc
+	taskmem_posix.c taskmem_xpcom.cc taskmem_win32.cc
 
 libcom_la_LDFLAGS = -avoid-version @XPCOM_LIBS@

@@ -79,7 +79,7 @@ DEFINE_STATIC_CLASS(CoMalloc, com_taskmem)
 IMalloc *
 COM_SYM(com_allocator)(void)
 {
-	INITIALISE_ADDREF_INTERFACE_POINTER(&com_taskmem, IMalloc);
+	INITIALISE_ADDREF_INTERFACE_POINTER(CoMalloc, &com_taskmem, IMalloc);
 	
 	return GET_INTERFACE_POINTER(&com_taskmem, IMalloc);
 }
@@ -91,7 +91,7 @@ COM_COMPAT(CoGetMalloc)(uint32_t context, IMalloc **out)
 	{
 		return COM_E_INVALIDARG;
 	}
-	INITIALISE_ADDREF_INTERFACE_POINTER(&com_taskmem, IMalloc);
+	INITIALISE_ADDREF_INTERFACE_POINTER(CoMalloc, &com_taskmem, IMalloc);
 	
 	*out = GET_INTERFACE_POINTER(&com_taskmem, IMalloc);
 	return COM_S_OK;

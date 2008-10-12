@@ -45,6 +45,7 @@
 
 # define DECLARE_IMPLEMENTS(__classname, __intf) \
 	union __classname##__##__intf##_union { \
+		IUnknown u; \
 		__intf i; \
 		struct { \
 			const struct __intf##Vtbl *lpVtbl; \
@@ -52,8 +53,15 @@
 		} c; \
 	} __intf##_;
 
+# define DECLARE_GENERIC_FACTORY(__classname) \
+	DECLARE_CLASS(__classname) \
+	{ \
+		DECLARE_IMPLEMENTS(__classname, IClassFactory) \
+	}; \
+	COM_EXTERNC IUnknown *get##__classname(void);
+
 # define SELF(__classname, __intf, __intfptr)  \
-	(((union __classname##__intf##_union *) (__intfptr))->c.self)
+	(((union __classname##__##__intf##_union *) (__intfptr))->c.self)
 
 # define DECLARE_SELF(__classname, __intf, __intfptr) \
 	struct __classname *self = SELF(__classname, __intf, __intfptr);
@@ -61,14 +69,18 @@
 # define DEFINE_CLASS_INTERFACE(__classname, __intf) \
 	static const struct __intf##Vtbl __classname##_##__intf =
 
-# define INITIALISE_INTERFACE_POINTER(__instance, __intf) \
+# define INITIALISE_INTERFACE_POINTER(__classname, __instance, __intf) \
+	if(NULL == (__instance)->__intf##_.i.lpVtbl) \
+	{ \
+		(__instance)->__intf##_.i.lpVtbl = &__classname##_##__intf; \
+	} \
 	if(NULL == (__instance)->__intf##_.c.self) \
 	{ \
 		(__instance)->__intf##_.c.self = (__instance); \
 	}
 
-# define INITIALISE_ADDREF_INTERFACE_POINTER(__instance, __intf) \
-	INITIALISE_INTERFACE_POINTER(__instance, __intf) \
+# define INITIALISE_ADDREF_INTERFACE_POINTER(__classname, __instance, __intf) \
+	INITIALISE_INTERFACE_POINTER(__classname, __instance, __intf) \
 	(__instance)->__intf##_.i.lpVtbl->AddRef(&((__instance)->__intf##_.i))
 
 # define DEFINE_STATIC_CLASS(__classname, __instname) \
@@ -79,5 +91,67 @@
 
 # define GET_INTERFACE_POINTER(__instance, __intf) \
 	(&((__instance)->__intf##_.i))
+
+# define GET_ALIASED_IUNKNOWN(__instance, __intf) \
+	(&((__instance)->__intf##_.u))
+
+# define DEFINE_GENERIC_FACTORY(__classname, constructor) \
+	static com_result_t __classname##_IClassFactory_QueryInterface(IClassFactory *intf, com_riid_t riid, void **out) \
+	{ \
+		if(com_guid_equal(riid, &IID_IUnknown) || com_guid_equal(riid, &IID_IClassFactory)) \
+		{ \
+			IClassFactory_AddRef(intf); \
+			*out = intf; \
+			return COM_S_OK; \
+		} \
+		return COM_E_NOINTERFACE; \
+	} \
+	\
+	static uint32_t __classname##_IClassFactory_AddRef(IClassFactory *intf) \
+	{ \
+		(void) intf; \
+		\
+		return 2; \
+	} \
+	\
+	static uint32_t __classname##_IClassFactory_Release(IClassFactory *intf) \
+	{ \
+		(void) intf; \
+		\
+		return 1; \
+	} \
+	\
+	static com_result_t __classname##_IClassFactory_CreateInstance(IClassFactory *intf, IUnknown *outer, com_riid_t riid, void **out) \
+	{ \
+		(void) intf; \
+		constructor; \
+		return COM_E_NOINTERFACE; \
+	} \
+	\
+	static com_result_t __classname##_IClassFactory_LockServer(IClassFactory *intf, com_bool_t lock) \
+	{ \
+		(void) intf; \
+		(void) lock; \
+		\
+		return COM_S_OK; \
+	} \
+	DEFINE_CLASS_INTERFACE(__classname, IClassFactory) \
+	{ \
+		__classname##_IClassFactory_QueryInterface, \
+		__classname##_IClassFactory_AddRef, \
+		__classname##_IClassFactory_Release, \
+		__classname##_IClassFactory_CreateInstance, \
+		__classname##_IClassFactory_LockServer \
+	}; \
+	DEFINE_STATIC_CLASS(__classname, static_##__classname) \
+	{ \
+		DEFINE_STATIC_IMPLEMENTATION(__classname, IClassFactory) \
+	}; \
+	\
+	IUnknown *get##__classname(void) \
+	{ \
+		INITIALISE_ADDREF_INTERFACE_POINTER(__classname, &static_##__classname, IClassFactory); \
+		return GET_ALIASED_IUNKNOWN(&static_##__classname, IClassFactory); \
+	}
 
 #endif /* !COM_INTERFACES_H_ */

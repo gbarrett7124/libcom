@@ -37,9 +37,6 @@
 #  error Do not include this file directly; use <com/com.h> instead.
 # endif
 
-# include <sys/types.h>
-# include <inttypes.h>
-
 typedef struct com_guid_struct com_guid_t;
 typedef int32_t com_result_t;
 

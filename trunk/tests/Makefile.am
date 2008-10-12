@@ -25,14 +25,12 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-CPPFLAGS += -DLIBCOM_INTERNAL=1 -I${top_srcdir}/include -I${top_builddir}/include @XPCOM_CPPFLAGS@
+CPPFLAGS += -I${top_srcdir}/include -I${top_builddir}/include
 
-lib_LTLIBRARIES = libcom.la
+noinst_PROGRAMS = test-1 test-2
 
-libcom_la_SOURCES = p_libcom.h \
-	global.c guid.c instance.c \
-	xpcom.cc \
-	registry.c registry_xpcom.cc \
-	taskmem_posix.c taskmem_xpcom.cc
+test_1_SOURCES = test-1.c
+test_1_LDADD = ../libcom/libcom.la
 
-libcom_la_LDFLAGS = -avoid-version @XPCOM_LIBS@
+test_2_SOURCES = test-2-server.c test-2-factory.c test-2.c test-2-guids.h ITester2.h Test2.h Test2Factory.h
+test_2_LDADD = ../libcom/libcom.la

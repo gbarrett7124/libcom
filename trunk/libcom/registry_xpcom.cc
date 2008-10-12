@@ -65,9 +65,9 @@ com__xpcom_register(com_rco_t *rcox, IClassFactory *factory)
 		xpcom__convert_to_nsid(classid, *(rcox->clsid));
 		if(rcox->factory)
 		{
-			xpcom_registrar->RegisterFactory(classid, rcox->displayname, rcox->contractid, (nsIFactory *) factory);
+			xpcom_registrar->RegisterFactory(classid, rcox->displayname, rcox->contractid, (nsIFactory *) factory)))
+			return COM_S_OK;
 		}
-		return COM_S_OK;
 	}
 	return COM_E_INVALIDARG;
 }

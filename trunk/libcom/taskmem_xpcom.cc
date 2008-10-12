@@ -89,7 +89,7 @@ com__xpcom_taskmem_init(void)
 IMalloc *
 COM_SYM(com_allocator)(void)
 {
-	INITIALISE_ADDREF_INTERFACE_POINTER(&com_taskmem, IMalloc);
+	INITIALISE_ADDREF_INTERFACE_POINTER(CoMallocXPCOM, &com_taskmem, IMalloc);
 	
 	return GET_INTERFACE_POINTER(&com_taskmem, IMalloc);
 }
@@ -101,7 +101,7 @@ COM_COMPAT(CoGetMalloc)(uint32_t context, IMalloc **out)
 	{
 		return COM_E_INVALIDARG;
 	}
-	INITIALISE_ADDREF_INTERFACE_POINTER(&com_taskmem, IMalloc);
+	INITIALISE_ADDREF_INTERFACE_POINTER(CoMallocXPCOM, &com_taskmem, IMalloc);
 	
 	*out = GET_INTERFACE_POINTER(&com_taskmem, IMalloc);
 	return COM_S_OK;

@@ -46,7 +46,7 @@ typedef enum com_context_enum
 	COM_CTX_REMOTE_SERVER = (1<<4),
 	
 	COM_CTX_INPROC = (COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER),
-	COM_CTX_SEREVER = (COM_CTX_INPROC_SERVER|COM_CTX_LOCAL_SERVER|COM_CTX_REMOTE_SERVER),
+	COM_CTX_SERVER = (COM_CTX_INPROC_SERVER|COM_CTX_LOCAL_SERVER|COM_CTX_REMOTE_SERVER),
 	COM_CTX_ALL = (COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER|COM_CTX_LOCAL_SERVER|COM_CTX_REMOTE_SERVER)
 } com_context_t;
 
@@ -96,7 +96,7 @@ COM_CEXPORT com_result_t COM_SYM(com_shutdown)(void);
 
 COM_CEXPORT com_result_t COM_SYM(com_getclass)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
 COM_CEXPORT com_result_t COM_SYM(com_register)(com_rco_t *rcox, uint32_t *key);
-COM_CEXPORT com_result_t COM_SYM(com_register_factory)(com_context_t context, IUnknown *factory, uint32_t *key);
+COM_CEXPORT com_result_t COM_SYM(com_register_factory)(com_rclsid_t clsid, com_context_t context, const char *contractid, IUnknown *factory, uint32_t *key);
 COM_CEXPORT com_result_t COM_SYM(com_register_inprocsrv)(com_context_t context, const char *path, uint32_t *key);
 COM_CEXPORT com_result_t COM_SYM(com_unregister)(uint32_t key);
 

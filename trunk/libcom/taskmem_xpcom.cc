@@ -34,11 +34,174 @@
 # include "config.h"
 #endif
 
+#define COM_CINTERFACE
 #include "p_libcom.h"
 
 #ifdef COM_USE_XPCOM
 
 # include <nsXPCOM.h>
+# include <nsIMemory.h>
 
+static com_result_t CoMallocXPCOM_QueryInterface(IMalloc *intf, com_riid_t iid, void **out);
+static uint32_t CoMallocXPCOM_AddRef(IMalloc *intf);
+static uint32_t CoMallocXPCOM_Release(IMalloc *intf);
+static void *CoMallocXPCOM_Alloc(IMalloc *intf, uint32_t size);
+static void CoMallocXPCOM_Free(IMalloc *intf, void *ptr);
+static void *CoMallocXPCOM_Realloc(IMalloc *intf, void *ptr, uint32_t size);
+static size_t CoMallocXPCOM_GetSize(IMalloc *intf, void *ptr);
+static int CoMallocXPCOM_DidAlloc(IMalloc *intf, void *ptr);
+static void CoMallocXPCOM_HeapMinimize(IMalloc *intf);
+
+/* #include "taskmem_xpcom.h" */
+
+DECLARE_CLASS(CoMallocXPCOM)
+{
+	DECLARE_IMPLEMENTS(CoMallocXPCOM, IMalloc);
+	nsIMemory *allocator;
+};
+
+DEFINE_CLASS_INTERFACE(CoMallocXPCOM, IMalloc)
+{
+	CoMallocXPCOM_QueryInterface,
+	CoMallocXPCOM_AddRef,
+	CoMallocXPCOM_Release,
+	CoMallocXPCOM_Alloc,
+	CoMallocXPCOM_Realloc,
+	CoMallocXPCOM_Free,
+	CoMallocXPCOM_GetSize,
+	CoMallocXPCOM_DidAlloc,
+	CoMallocXPCOM_HeapMinimize	
+};
+
+DEFINE_STATIC_CLASS(CoMallocXPCOM, com_taskmem)
+{
+	DEFINE_STATIC_IMPLEMENTATION(CoMallocXPCOM, IMalloc),
+	/* allocator: */ NULL
+};
+
+int
+com__xpcom_taskmem_init(void)
+{
+	NS_GetMemoryManager(&(com_taskmem.allocator));
+	return COM_S_OK;
+}
+
+IMalloc *
+COM_SYM(com_allocator)(void)
+{
+	INITIALISE_ADDREF_INTERFACE_POINTER(&com_taskmem, IMalloc);
+	
+	return GET_INTERFACE_POINTER(&com_taskmem, IMalloc);
+}
+
+com_result_t
+COM_COMPAT(CoGetMalloc)(uint32_t context, IMalloc **out)
+{
+	if(1 != context)
+	{
+		return COM_E_INVALIDARG;
+	}
+	INITIALISE_ADDREF_INTERFACE_POINTER(&com_taskmem, IMalloc);
+	
+	*out = GET_INTERFACE_POINTER(&com_taskmem, IMalloc);
+	return COM_S_OK;
+}
+
+void *
+COM_COMPAT(CoTaskMemAlloc)(uint32_t size)
+{
+	return NS_Alloc(size);
+}
+
+void
+COM_COMPAT(CoTaskMemFree)(void *ptr)
+{
+	return NS_Free(ptr);
+}
+
+void *
+COM_COMPAT(CoTaskMemRealloc)(void *ptr, uint32_t newsize)
+{
+	return NS_Realloc(ptr, newsize);
+}
+
+
+static com_result_t
+CoMallocXPCOM_QueryInterface(IMalloc *intf, com_riid_t iid, void **out)
+{
+	if(com_guid_equal(iid, IID_IUnknown) || com_guid_equal(iid, IID_IMalloc))
+	{
+		IMalloc_AddRef(intf);
+		*out = intf;
+		return COM_S_OK;
+	}
+	return COM_E_NOINTERFACE;
+}
+
+static uint32_t
+CoMallocXPCOM_AddRef(IMalloc *intf)
+{
+	(void) intf;
+	
+	return 2;
+}
+
+static uint32_t
+CoMallocXPCOM_Release(IMalloc *intf)
+{
+	(void) intf;
+	
+	return 1;
+}
+
+static void *
+CoMallocXPCOM_Alloc(IMalloc *intf, uint32_t size)
+{
+	(void) intf;
+	
+	return com_taskmem.allocator->Alloc(size);
+}
+
+static void
+CoMallocXPCOM_Free(IMalloc *intf, void *ptr)
+{
+	(void) intf;
+	
+	return com_taskmem.allocator->Free(ptr);
+}
+
+static void *
+CoMallocXPCOM_Realloc(IMalloc *intf, void *ptr, size_t size)
+{
+	(void) intf;
+
+	return com_taskmem.allocator->Realloc(ptr, size);
+}
+
+static void
+CoMallocXPCOM_HeapMinimize(IMalloc *intf)
+{
+	(void) intf;
+	
+	com_taskmem.allocator->HeapMinimize(true);
+}
+
+static size_t
+CoMallocXPCOM_GetSize(IMalloc *intf, void *ptr)
+{
+	(void) intf;
+	(void) ptr;
+	
+	return (size_t) -1;
+}
+
+static int
+CoMallocXPCOM_DidAlloc(IMalloc *intf, void *ptr)
+{
+	(void) intf;
+	(void) ptr;
+	
+	return (size_t) -1;
+}
 
 #endif /* COM_USE_XPCOM */

@@ -41,15 +41,16 @@
 # include <nsXPCOM.h>
 
 com_result_t
-xpcom_init(void)
+com__xpcom_init(void)
 {
 	NS_InitXPCOM2(NULL, NULL, NULL);
-	xpcom_registry_init();
+	com__xpcom_registry_init();
+	com__xpcom_taskmem_init();
 	return COM_S_OK;
 }
 
 com_result_t
-xpcom_shutdown(void)
+com__xpcom_shutdown(void)
 {
 	NS_ShutdownXPCOM(NULL);
 	return COM_S_OK;

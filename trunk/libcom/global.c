@@ -54,7 +54,7 @@ COM_SYM(com_init)(const char *appname)
 	if(0 == initcount)
 	{
 #ifdef COM_USE_XPCOM
-		xpcom_init();
+		com__xpcom_init();
 #endif
 	}
 	initcount++;
@@ -77,7 +77,7 @@ COM_SYM(com_shutdown)(void)
 #ifdef COM_USE_XPCOM
 	if(0 == initcount)
 	{
-		xpcom_shutdown();
+		com__xpcom_shutdown();
 	}
 #endif
 #ifdef COM_USE_PTHREAD

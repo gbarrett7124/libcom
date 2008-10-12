@@ -36,7 +36,10 @@
 
 #include "p_libcom.h"
 
-#define COTASKMEM_SIGNATURE            0xCAFECAFE
+/* The XPCOM and Win32 task allocators take precedence over ours */
+#if !defined(COM_USE_XPCOM) && !defined(COM_USE_WIN32)
+
+# define COTASKMEM_SIGNATURE            0xCAFECAFE
 
 static com_result_t CoMalloc_QueryInterface(IMalloc *intf, com_riid_t iid, void **out);
 static uint32_t CoMalloc_AddRef(IMalloc *intf);
@@ -47,6 +50,8 @@ static void *CoMalloc_Realloc(IMalloc *intf, void *ptr, uint32_t size);
 static size_t CoMalloc_GetSize(IMalloc *intf, void *ptr);
 static int CoMalloc_DidAlloc(IMalloc *intf, void *ptr);
 static void CoMalloc_HeapMinimize(IMalloc *intf);
+
+/* #include "taskmem_xpcom.h" */
 
 DECLARE_CLASS(CoMalloc)
 {
@@ -239,3 +244,5 @@ CoMalloc_DidAlloc(IMalloc *intf, void *ptr)
 	}
 	return 1;
 }
+
+#endif /* !COM_USE_XPCOM && !COM_USE_WIN32 */

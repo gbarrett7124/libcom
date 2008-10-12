@@ -48,7 +48,7 @@ static nsIComponentManager *xpcom_components;
 static void xpcom__convert_to_nsid(nsID &dest, com_rclsid_t src);
 
 int
-xpcom_registry_init(void)
+com__xpcom_registry_init(void)
 {
 	NS_GetComponentRegistrar(&xpcom_registrar);
 	NS_GetComponentManager(&xpcom_components);
@@ -56,16 +56,16 @@ xpcom_registry_init(void)
 }
 
 com_result_t
-xpcom_register(com_rco_t *rcox)
+com__xpcom_register(com_rco_t *rcox, IClassFactory *factory)
 {
 	nsID classid;
 	
-	if(COM_CTX_INPROC_SERVER == (rcox->ctx & COM_CTX_INPROC_SERVER))
+	if(COM_CTX_INPROC_SERVER == (rcox->ctx & COM_CTX_INPROC_SERVER) && NULL != factory)
 	{
 		xpcom__convert_to_nsid(classid, *(rcox->clsid));
 		if(rcox->factory)
 		{
-			xpcom_registrar->RegisterFactory(classid, rcox->displayname, rcox->contractid, (nsIFactory *) rcox->factory);
+			xpcom_registrar->RegisterFactory(classid, rcox->displayname, rcox->contractid, (nsIFactory *) factory);
 		}
 		return COM_S_OK;
 	}
@@ -73,7 +73,7 @@ xpcom_register(com_rco_t *rcox)
 }
 
 com_result_t
-xpcom_unregister(com_rclsid_t rclsid, IClassFactory *factory)
+com__xpcom_unregister(com_rclsid_t rclsid, IClassFactory *factory)
 {
 	nsID clsid;
 	
@@ -83,7 +83,7 @@ xpcom_unregister(com_rclsid_t rclsid, IClassFactory *factory)
 }
 
 com_result_t
-xpcom_getclass(com_rclsid_t rclsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out)
+com__xpcom_getclass(com_rclsid_t rclsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out)
 {
 	nsID clsid, iid;
 	

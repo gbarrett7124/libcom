@@ -51,12 +51,13 @@
 # define COM_USE_LOCALREG              1
 
 # ifdef COM_USE_XPCOM 
-COM_EXTERNC com_result_t xpcom_init(void);
-COM_EXTERNC int xpcom_registry_init(void);
-COM_EXTERNC com_result_t xpcom_shutdown(void);
-COM_EXTERNC com_result_t xpcom_register(com_rco_t *rcox);
-COM_EXTERNC com_result_t xpcom_unregister(com_rclsid_t clsid, IClassFactory *factory);
-COM_EXTERNC com_result_t xpcom_getclass(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
+COM_EXTERNC com_result_t com__xpcom_init(void);
+COM_EXTERNC int com__xpcom_registry_init(void);
+COM_EXTERNC int com__xpcom_taskmem_init(void);
+COM_EXTERNC com_result_t com__xpcom_shutdown(void);
+COM_EXTERNC com_result_t com__xpcom_register(com_rco_t *rcox, IClassFactory *factory);
+COM_EXTERNC com_result_t com__xpcom_unregister(com_rclsid_t clsid, IClassFactory *factory);
+COM_EXTERNC com_result_t com__xpcom_getclass(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
 # endif
 
 #endif /* !P_LIBCOM_H_ */

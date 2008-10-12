@@ -46,5 +46,6 @@
 # define COM_E_INVALIDARG              ((com_result_t) 0x80070057L)
 # define COM_E_NOINTERFACE             ((com_result_t) 0x80004002L)
 # define COM_E_CLASSNOTREG             ((com_result_t) 0x80040154L)
+# define COM_E_DLLNOTFOUND             ((com_result_t) 0x800401F8L)
 
 #endif /* !COM_ERROR_H_ */

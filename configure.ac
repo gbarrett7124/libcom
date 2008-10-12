@@ -136,6 +136,7 @@ AC_CONFIG_FILES([Makefile
 include/Makefile
 include/com/Makefile
 libcom/Makefile
+tests/Makefile
 ])
 
 AC_OUTPUT

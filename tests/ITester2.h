@@ -30,55 +30,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef COM_COM_H_
-# define COM_COM_H_                    1
+#ifndef ITESTER2_H_
+# define ITESTER2_H_                   1
 
-# include <sys/types.h>
-# include <inttypes.h>
-# include <string.h>
+# include "com/com.h"
 
-# if defined(_WIN32)
-#  if defined(__GNUC__)
-#   define COM_EXPORTED                __attribute__((dllexport))
-#   define COM_IMPORTED                __attribute__((dllimport))
-#  else
-#   define COM_EXPORTED                __declspec(dllexport)
-#   define COM_IMPORTED                __declspec(dllimport)
-#  endif
-# else
-#  define COM_EXPORTED                 __attribute__((visibility("default")))
-#  define COM_IMPORTED                 /* */
-# endif
+# undef INTERFACE
+# define INTERFACE                     ITester2
 
-# if defined(__cplusplus)
-#  define COM_EXTERNC                  extern "C"
-#  define COM_DECLAREC                 extern "C"
-# else
-#  define COM_EXTERNC                  extern
-#  define COM_DECLAREC                 /* */
-# endif
+DECLARE_INTERFACE_(ITester2, IUnknown)
+{
+	BEGIN_INTERFACE
+	
+	STDMETHOD(QueryInterface)(THIS_ com_riid_t riid, void **out) PURE;
+	STDMETHOD_(uint32_t,AddRef)(THIS) PURE;
+	STDMETHOD_(uint32_t,Release)(THIS) PURE;
+	
+	STDMETHOD(Set)(THIS_ int newval) PURE;
+	STDMETHOD_(int, Get)(THIS);
+	
+	END_INTERFACE
+};
 
-# ifdef LIBCOM_INTERNAL
-#  define COM_EXPORT                    COM_EXPORTED
-# else
-#  define COM_EXPORT                    COM_IMPORTED
-# endif
+#endif /* !ITESTER2_H_ */
 
-# define COM_CEXPORT                    COM_EXTERNC COM_EXPORT
-
-# define COM_SYM(__x)                  __x
-# define COM_COMPAT(__x)               com_##__x
-
-# include "com/types.h"
-# include "com/error.h"
-# include "com/interfaces.h"
-
-# include "com/IUnknown.h"
-# include "com/IClassFactory.h"
-# include "com/IMalloc.h"
-
-# include "com/classes.h"
-# include "com/api.h"
-# include "com/compat.h"
-
-#endif /* !COM_COM_H_ */

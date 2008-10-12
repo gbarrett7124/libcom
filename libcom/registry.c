@@ -36,6 +36,9 @@
 
 #include "p_libcom.h"
 
+#define COM_CTX_LOCALREG \
+	(COM_CTX_LOCAL_SERVER|COM_CTX_INPROC_SERVER)
+
 typedef struct registry_entry_struct registry_entry_t;
 
 struct registry_entry_struct
@@ -158,13 +161,54 @@ COM_SYM(com_unregister_clsid)(com_rclsid_t clsid)
 	return r;
 }
 
+static com_result_t
+com__getclass_entry(size_t index, com_server_t *server, com_riid_t riid, void **out)
+{
+	(void) server;
+	
+	if(NULL != entries[index].factory)
+	{
+		return IUnknown_QueryInterface(entries[index].factory, riid, out);
+	}
+#ifdef COM_USE_DL
+	/* FIXME: Dynamic loading */
+#endif
+	return COM_E_DLLNOTFOUND;
+}
+
 com_result_t
 COM_SYM(com_getclass)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out)
 {
+	com_result_t r;
+	size_t c;
+	
+	r = COM_E_CLASSNOTREG;
+	/* Check the internal registry first */
+	if(0 != (context & COM_CTX_LOCALREG))
+	{
+		com__registry_lock();
+		for(c = 0; c < nentries; c++)
+		{
+			if(com_guid_equal(clsid, &(entries[c].clsid)) && 0 != (entries[c].ctx & context & COM_CTX_LOCALREG))
+			{
+				r = com__getclass_entry(c, NULL, riid, out);
+				break;
+			}
+		}
+		com__registry_unlock();
+	}
+	if(COM_E_CLASSNOTREG != r)
+	{
+		return r;
+	}
 #ifdef COM_USE_XPCOM
-	return com__xpcom_getclass(clsid, context, server, riid, out);
+	r = com__xpcom_getclass(clsid, context, server, riid, out);
+	if(COM_E_CLASSNOTREG != r)
+	{
+		return r;
+	}
 #endif
-	return COM_E_ACCESSDENIED;
+	return r;
 }
 
 static void

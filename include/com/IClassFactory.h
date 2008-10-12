@@ -45,8 +45,8 @@ DECLARE_INTERFACE_(IClassFactory, IUnknown)
 	BEGIN_INTERFACE
 	
 	STDMETHOD(QueryInterface)(THIS_ com_riid_t riid, void **out) PURE;
-	STDMETHOD_(unsigned long,AddRef)(THIS) PURE;
-	STDMETHOD_(unsigned long,Release)(THIS) PURE;
+	STDMETHOD_(uint32_t,AddRef)(THIS) PURE;
+	STDMETHOD_(uint32_t,Release)(THIS) PURE;
 	
 	STDMETHOD(CreateInstance)(THIS_ IUnknown *outer, com_riid_t riid, void **out) PURE;
 	STDMETHOD(LockServer)(THIS_ com_bool_t lock) PURE;

@@ -37,6 +37,19 @@
 #include "p_libcom.h"
 
 com_result_t
+COM_SYM(com_register_factory)(com_rclsid_t clsid, com_context_t context, const char *contractid, IUnknown *factory, uint32_t *key)
+{
+	com_rco_t rcox;
+
+	memset(&rcox, 0, sizeof(com_rco_t));
+	rcox.clsid = clsid;
+	rcox.ctx = context;
+	rcox.contractid = contractid;
+	rcox.factory = factory;
+	return com_register(&rcox, key);
+}
+
+com_result_t
 COM_COMPAT(CoRegisterClassObject)(com_rclsid_t clsid, IUnknown *factory, com_context_t context, com_regflags_t flags, uint32_t *key)
 {
 	com_rco_t rcox;

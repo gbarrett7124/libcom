@@ -45,5 +45,6 @@
 # define COM_E_OUTOFMEMORY             ((com_result_t) 0x8007000EL)
 # define COM_E_INVALIDARG              ((com_result_t) 0x80070057L)
 # define COM_E_NOINTERFACE             ((com_result_t) 0x80004002L)
+# define COM_E_CLASSNOTREG             ((com_result_t) 0x80040154L)
 
 #endif /* !COM_ERROR_H_ */

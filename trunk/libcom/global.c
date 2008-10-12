@@ -36,11 +36,30 @@
 
 #include "p_libcom.h"
 
+#ifdef COM_USE_PTHREAD
+static pthread_mutex_t initlock = PTHREAD_MUTEX_INITIALIZER;
+#endif
+static int initcount;
+
+/* Initialise COM for the current thread */
 com_result_t
-COM_SYM(com_init)(void)
+COM_SYM(com_init)(const char *appname)
 {
+#ifdef COM_USE_PTHREAD
+	pthread_mutex_lock(&initlock);
+#endif
+#ifdef COM_USE_WIN32
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+#endif
+	if(0 == initcount)
+	{
 #ifdef COM_USE_XPCOM
-	xpcom_init();
+		xpcom_init();
+#endif
+	}
+	initcount++;
+#ifdef COM_USE_PTHREAD
+	pthread_mutex_unlock(&initlock);
 #endif
 	return COM_S_OK;
 }
@@ -48,8 +67,38 @@ COM_SYM(com_init)(void)
 com_result_t
 COM_SYM(com_shutdown)(void)
 {
+#ifdef COM_USE_PTHREAD
+	pthread_mutex_lock(&initlock);
+#endif
+#ifdef COM_USE_WIN32
+	CoUnitialize();
+#endif
+	initcount--;
 #ifdef COM_USE_XPCOM
-	xpcom_shutdown();
+	if(0 == initcount)
+	{
+		xpcom_shutdown();
+	}
+#endif
+#ifdef COM_USE_PTHREAD
+	pthread_mutex_unlock(&initlock);
 #endif
 	return COM_S_OK;
+}
+
+com_result_t
+COM_COMPAT(CoInitialize)(void *reserved)
+{
+	(void) reserved;
+	
+	return com_init(NULL);
+}
+
+com_result_t
+COM_COMPAT(CoInitializeEx)(void *reserved, uint32_t flags)
+{
+	(void) reserved;
+	(void) flags;
+	
+	return com_init(NULL);
 }

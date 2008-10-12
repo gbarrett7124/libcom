@@ -37,19 +37,35 @@
 #  error Do not include this file directly; use <com/com.h> instead.
 # endif
 
-COM_EXPORT com_result_t COM_COMPAT(CoRegisterClassObject)(com_rclsid_t clsid, IUnknown *factory, com_context_t context, com_regflags_t flags, uint32_t *key);
-COM_EXPORT com_result_t COM_COMPAT(CoRevokeClassObject)(uint32_t key);
-COM_EXPORT com_result_t COM_COMPAT(CoGetClassObject)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
-COM_EXPORT com_result_t COM_COMPAT(CoCreateInstanceEx)(com_rclsid_t clsid, IUnknown *outer, com_context_t context, com_server_t *server, size_t intfcount, com_multiqi_t *intf);
-COM_EXPORT com_result_t COM_COMPAT(CoCreateInstance)(com_rclsid_t clsid, IUnknown *outer, com_context_t ctx, com_riid_t riid, void **out);
+COM_CEXPORT com_result_t COM_COMPAT(CoInitialize)(void *reserved);
+COM_CEXPORT com_result_t COM_COMPAT(CoInitializeEx)(void *reserved, uint32_t flags);
+COM_CEXPORT com_result_t COM_COMPAT(CoRegisterClassObject)(com_rclsid_t clsid, IUnknown *factory, com_context_t context, com_regflags_t flags, uint32_t *key);
+COM_CEXPORT com_result_t COM_COMPAT(CoRevokeClassObject)(uint32_t key);
+COM_CEXPORT com_result_t COM_COMPAT(CoGetClassObject)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
+COM_CEXPORT com_result_t COM_COMPAT(CoCreateInstanceEx)(com_rclsid_t clsid, IUnknown *outer, com_context_t context, com_server_t *server, size_t intfcount, com_multiqi_t *intf);
+COM_CEXPORT com_result_t COM_COMPAT(CoCreateInstance)(com_rclsid_t clsid, IUnknown *outer, com_context_t ctx, com_riid_t riid, void **out);
 
-COM_EXPORT com_result_t COM_COMPAT(CoGetMalloc)(com_context_t context, IMalloc **out);
-COM_EXPORT void *COM_COMPAT(CoTaskMemAlloc)(uint32_t size);
-COM_EXPORT void COM_COMPAT(CoTaskMemFree)(void *ptr);
-COM_EXPORT void *COM_COMPAT(CoTaskMemRealloc)(void *ptr, uint32_t newsize);
+COM_CEXPORT com_result_t COM_COMPAT(CoGetMalloc)(com_context_t context, IMalloc **out);
+COM_CEXPORT void *COM_COMPAT(CoTaskMemAlloc)(uint32_t size);
+COM_CEXPORT void COM_COMPAT(CoTaskMemFree)(void *ptr);
+COM_CEXPORT void *COM_COMPAT(CoTaskMemRealloc)(void *ptr, uint32_t newsize);
 
-# if !defined(_WIN32) || defined(COM_USE_COMPAT)
+# if defined(COM_COMPAT_MSCOM)
 
+/* COINIT values - COINIT_MULITHREADED is all we support */
+#  define COINIT_MULTITHREADED         0
+
+/* CLSCTX values */
+#  define CLSCTX_INPROC_SERVER         COM_CTX_INPROC_SERVER
+#  define CLSCTX_INPROC_HANDLER        COM_CTX_INPROC_HANDLER
+#  define CLSCTX_LOCAL_SERVER          COM_CTX_LOCAL_SERVER
+#  define CLSCTX_REMOTE_SERVER         COM_CTX_REMOTE_SERVER
+
+/* API functions */
+#  define IsEqualGuid(a, b)            com_guid_equal(a, b)
+
+#  define CoInitialize                 COM_COMPAT(CoInitialize)
+#  define CoInitializeEx               COM_COMPAT(CoInitializeEx)
 #  define CoRegisterClassObject        COM_COMPAT(CoRegisterClassObject)
 #  define CoRevokeClassObject          COM_COMPAT(CoRevokeClassObject)
 #  define CoGetClassObject             COM_COMPAT(CoGetClassObject)
@@ -60,6 +76,6 @@ COM_EXPORT void *COM_COMPAT(CoTaskMemRealloc)(void *ptr, uint32_t newsize);
 #  define CoTaskMemFree                COM_COMPAT(CoTaskMemFree)
 #  define CoTaskMemRealloc             COM_COMPAT(CoTaskMemRealloc)
 
-# endif /* !WIN32 || COM_USE_COMPAT */
+# endif /* COM_COMPAT_MSCOM */
 
 #endif /* !COM_COMPAT_H_ */

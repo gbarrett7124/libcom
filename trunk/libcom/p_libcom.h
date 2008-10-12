@@ -36,16 +36,27 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
-
+# ifdef HAVE_PTHREAD_H
+#  include <pthread.h>
+# endif
+# ifdef HAVE_DLFCN_H
+#  include <dlfcn.h>
+# endif
+# if defined(COM_USE_WIN32)
+#  include <objbase.h>
+# endif
 # include "com/com.h"
+
+/* We need the local registry regardless of the others */
+# define COM_USE_LOCALREG              1
 
 # ifdef COM_USE_XPCOM 
 COM_EXTERNC com_result_t xpcom_init(void);
 COM_EXTERNC int xpcom_registry_init(void);
 COM_EXTERNC com_result_t xpcom_shutdown(void);
-COM_EXTERNC com_result_t xpcom_register(com_rco_t *rcox, uint32_t *key);
+COM_EXTERNC com_result_t xpcom_register(com_rco_t *rcox);
+COM_EXTERNC com_result_t xpcom_unregister(com_rclsid_t clsid, IClassFactory *factory);
 COM_EXTERNC com_result_t xpcom_getclass(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
-
 # endif
 
 #endif /* !P_LIBCOM_H_ */

@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define COM_COMPAT_MSCOM
 #include "com/com.h"
 
 int
@@ -51,7 +52,7 @@ main(int argc, char **argv)
 	(void) argc;
 	(void) argv;
 	
-	com_init();
+	com_init("com.googlecode.libcom.test-1");
 	
 	p = CoTaskMemAlloc(64);
 	if(NULL == p)

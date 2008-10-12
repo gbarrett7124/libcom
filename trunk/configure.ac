@@ -31,7 +31,7 @@ AC_CONFIG_SRCDIR([include/com/com.h])
 AM_INIT_AUTOMAKE([foreign])
 AM_MAINTAINER_MODE
 
-CPPFLAGS="$CPPFLAGS -W -Wall"
+CPPFLAGS="$CPPFLAGS -W -Wall -D_REENTRANT"
 export CPPFLAGS
 
 CFLAGS="$CFLAGS -g -O0"
@@ -41,24 +41,90 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_LIBTOOL
 
-AC_PATH_PROG([XULRUNNER_CONFIG], [xulrunner-config],,)
+AC_ARG_ENABLE(xpcom, [AS_HELP_STRING([--enable-xpcom],[Enable the libcom/XPCOM bridge (default=auto)])],[use_xpcom=$enableval],[use_xpcom=auto])
+AC_ARG_ENABLE(win32, [AS_HELP_STRING([--enable-win32],[Enable the libcom/Win32 bridge (default=auto)])],[use_win32=$enableval],[use_win32=auto])
+AC_ARG_ENABLE(cf, [AS_HELP_STRING([--enable-cf],[Use CoreFoundation’s CFPreferences to store registration data  (default=auto)])],[use_cf=$enableval],[use_cf=auto])
+AC_ARG_ENABLE(pthread, [AS_HELP_STRING([--enable-pthread],[Use POSIX threads (default=auto)])],[use_pthread=$enableval],[use_pthread=auto])
+AC_ARG_ENABLE(dl, [AS_HELP_STRING([--enable-dl],[Use dlopen() for dynamic loading (default=auto)])],[use_dl=$enableval],[use_dl=auto])
 
-if ! test x"${XULRUNNER_CONFIG}" = x"" ; then
-	AC_MSG_CHECKING([for XPCOM])
-	XPCOM_LIBS=`${XULRUNNER_CONFIG} --libs xpcom`
-	if test x"${XPCOM_LIBS}" = x"" ; then
-		AC_MSG_RESULT([not available])
-		use_xpcom=no
-		XPCOM_CPPFLAGS=''
-	else
-		use_xpcom=yes
-		XPCOM_CPPFLAGS=`${XULRUNNER_CONFIG} --cflags xpcom`
-		AC_MSG_RESULT([yes, libraries: ${XPCOM_LIBS}; headers: ${XPCOM_CPPFLAGS}])
+AC_MSG_CHECKING([whether to use POSIX threads])
+AC_MSG_RESULT([${use_pthread}])
+if test x"${use_pthread}" = x"auto" || test x"${use_pthread}" = x"yes" ; then
+	pthread_present=yes
+	AC_CHECK_HEADER([pthread.h],[AC_DEFINE_UNQUOTED([HAVE_PTHREAD_H],1,[Define to 1 if you have the <pthread.h> header file.])],pthread_present=no)
+	if test x"${pthread_present}" = x"yes" ; then
+		AC_CHECK_LIB(pthread,pthread_create)
+		AC_CHECK_FUNC(pthread_create,,pthread_present=no)
+	fi
+	if test x"${pthread_present}" = x"no" && test x"${use_pthread}" = x"yes"; then
+		AC_MSG_ERROR([POSIX threads support was requested but it cannot be located])
+	fi
+	use_pthread=${pthread_present}
+fi
+
+AC_MSG_CHECKING([whether to use dlopen()])
+AC_MSG_RESULT([${use_dl}])
+if test x"${use_dl}" = x"auto" || test x"${use_dl}" = x"yes" ; then
+	dl_present=yes
+	AC_CHECK_HEADER([dlfcn.h],,dl_present=no)
+	if test x"${dl_present}" = x"yes" ; then
+		AC_CHECK_LIB(dl,dlopen)
+		AC_CHECK_FUNC(dlopen,,dl_present=no)
+	fi
+	if test x"${dl_present}" = x"yes" && test x"${use_dl}" = x"yes" ; then
+		AC_MSG_ERROR([dlopen() support was requested but it cannot be located])
+	fi
+	use_dl=${dl_present}
+fi
+
+AC_MSG_CHECKING([whether to use XPCOM])
+AC_MSG_RESULT([${use_xpcom}])
+if test x"${use_xpcom}" = x"auto" || test x"${use_xpcom}" = x"yes" ; then
+	AC_PATH_PROG([XULRUNNER_CONFIG], [xulrunner-config],,)
+	if ! test x"${XULRUNNER_CONFIG}" = x"" ; then
+		AC_MSG_CHECKING([for XPCOM])
+		XPCOM_LIBS=`${XULRUNNER_CONFIG} --libs xpcom`
+		if test x"${XPCOM_LIBS}" = x"" ; then
+			AC_MSG_RESULT([not available])
+			if test x"${use_xpcom}" = x"yes" ; then
+				AC_MSG_ERROR([--enable-xpcom was specified but XPCOM cannot be found])
+			fi
+			use_xpcom=no
+			XPCOM_CPPFLAGS=''
+		else
+			use_xpcom=yes
+			XPCOM_CPPFLAGS=`${XULRUNNER_CONFIG} --cflags xpcom`
+			AC_MSG_RESULT([yes, libraries: ${XPCOM_LIBS}; headers: ${XPCOM_CPPFLAGS}])
+		fi
+	elif test x"${use_xpcom}" = x"yes" ; then
+		AC_MSG_ERROR([xulrunner-config is required to configure the XPCOM bridge but it cannot be found])
 	fi
 fi
 
 if test x"${use_xpcom}" = x"yes" ; then
 	AC_DEFINE_UNQUOTED([COM_USE_XPCOM], 1, [Define to use XPCOM bindings])
+else
+	use_xpcom=no
+fi
+if test x"${use_win32}" = x"yes" ; then
+	AC_DEFINE_UNQUOTED([COM_USE_WIN32], 1, [Define to use Win32 bindings])
+else
+	use_win32=no
+fi
+if test x"${use_cf}" = x"yes" ; then
+	AC_DEFINE_UNQUOTED([COM_USE_CF], 1, [Define to use CoreFoundation for registration data])
+else
+	use_cf=no
+fi
+if test x"${use_pthread}" = x"yes" ; then
+	AC_DEFINE_UNQUOTED([COM_USE_PTHREAD], 1, [Define to use POSIX threads for locking])
+else
+	use_pthread=no
+fi
+if test x"${use_dl}" = x"yes" ; then
+	AC_DEFINE_UNQUOTED([COM_USE_DL], 1, [Define to use dlopen() for dynamic loading])
+else
+	use_dl=no
 fi
 
 AC_SUBST([XPCOM_LIBS])
@@ -73,3 +139,12 @@ libcom/Makefile
 ])
 
 AC_OUTPUT
+
+AC_MSG_RESULT([
+libcom configuration summary:
+	XPCOM bridge:            ${use_xpcom}
+	Win32 bridge:            ${use_win32}
+	CoreFoundation support:  ${use_cf}
+	POSIX threads:           ${use_pthread}
+	dlopen() support:        ${use_dl}
+])

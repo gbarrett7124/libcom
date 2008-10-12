@@ -74,7 +74,7 @@ DEFINE_STATIC_CLASS(CoMalloc, com_taskmem)
 IMalloc *
 COM_SYM(com_allocator)(void)
 {
-	INITIALISE_INTERFACE_POINTER(&com_taskmem, IMalloc);
+	INITIALISE_ADDREF_INTERFACE_POINTER(&com_taskmem, IMalloc);
 	
 	return GET_INTERFACE_POINTER(&com_taskmem, IMalloc);
 }
@@ -86,7 +86,7 @@ COM_COMPAT(CoGetMalloc)(uint32_t context, IMalloc **out)
 	{
 		return COM_E_INVALIDARG;
 	}
-	INITIALISE_INTERFACE_POINTER(&com_taskmem, IMalloc);
+	INITIALISE_ADDREF_INTERFACE_POINTER(&com_taskmem, IMalloc);
 	
 	*out = GET_INTERFACE_POINTER(&com_taskmem, IMalloc);
 	return COM_S_OK;
@@ -113,8 +113,9 @@ COM_COMPAT(CoTaskMemRealloc)(void *ptr, uint32_t newsize)
 static com_result_t
 CoMalloc_QueryInterface(IMalloc *intf, com_riid_t iid, void **out)
 {
-	if(IsEqualGuid(iid, &IID_IUnknown) || IsEqualGuid(iid, &IID_IMalloc))
+	if(com_guid_equal(iid, &IID_IUnknown) || com_guid_equal(iid, &IID_IMalloc))
 	{
+		IMalloc_AddRef(intf);
 		*out = intf;
 		return COM_S_OK;
 	}
@@ -126,7 +127,7 @@ CoMalloc_AddRef(IMalloc *intf)
 {
 	(void) intf;
 	
-	return 1;
+	return 2;
 }
 
 static uint32_t

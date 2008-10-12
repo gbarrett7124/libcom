@@ -36,7 +36,6 @@
 
 #include "p_libcom.h"
 
-#ifdef COM_USE_LOCALREG
 typedef struct registry_entry_struct registry_entry_t;
 
 struct registry_entry_struct
@@ -48,34 +47,124 @@ struct registry_entry_struct
 	char *modulepath;
 	void *module;
 	com_getclassobject_t gco;
+	uint32_t key;
+#ifdef COM_USE_WIN32
+	uint32_t rkey;
+#endif
 };
 
 static uint32_t entrykey = 1;
 static registry_entry_t *entries;
 static size_t nentries;
+#ifdef COM_USE_PTHREAD
+static pthread_mutex_t registrylock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
+static void com__registry_lock(void);
+static void com__registry_unlock(void);
+
+/* FIXME: Support for COM_REG_SUSPENDED */
 com_result_t
 COM_SYM(com_register)(com_rco_t *rcox, uint32_t *key)
 {
 	com_result_t r = COM_E_ACCESSDENIED;
+	registry_entry_t *q;
 	
-#ifdef COM_USE_LOCALREG
-
-#endif
+	com__registry_lock();
+	if(NULL == (q = realloc(entries, sizeof(registry_entry_t) * (nentries + 1))))
+	{
+		com__registry_unlock();
+		return COM_E_OUTOFMEMORY;
+	}
+	entries = q;
+	q = &(entries[nentries]);
+	memset(q, 0, sizeof(registry_entry_t));
+	q->clsid = *(rcox->clsid);
+	q->key = entrykey;
+	q->ctx = rcox->ctx;
+	q->flags = rcox->flags;
+	if(NULL != rcox->factory)
+	{
+		q->factory = rcox->factory;
+	}
+	else if(NULL != rcox->modulepath)
+	{
+		if(NULL == (q->modulepath = strdup(rcox->modulepath)))
+		{
+			com__registry_unlock();
+			return COM_E_OUTOFMEMORY;
+		}
+	}
+	r = COM_S_OK;
 #ifdef COM_USE_XPCOM
-	if(COM_S_OK != (r = xpcom_register(rcox, key)))
+	if(COM_S_OK != (r = xpcom_register(rcox)))
 	{
 		return r;
 	}
 #endif
+	/* Finalise the registration */
+	if(r == COM_S_OK)
+	{
+		entrykey++;
+		nentries++;
+		*key = q->key;
+	}
+	com__registry_unlock();
 	return r;
 }
 
 com_result_t
 COM_SYM(com_unregister)(uint32_t key)
 {
-	return COM_S_OK;
+	size_t c;
+	
+	com__registry_lock();
+	for(c = 0; c < nentries; c++)
+	{
+		if(key == entries[c].key)
+		{
+#ifdef COM_USE_XPCOM
+			if(NULL != entries[c].factory)
+			{
+				xpcom_unregister(&(entries[c].clsid), entries[c].factory);
+			}
+#endif
+			free(entries[c].modulepath);
+			memmove(&entries[c], &(entries[c + 1]), sizeof(registry_entry_t) * (nentries - c - 1));
+			nentries--;
+			com__registry_unlock();
+			return COM_S_OK;
+		}
+	}
+	com__registry_unlock();
+	return COM_E_CLASSNOTREG;
+}
+
+com_result_t
+COM_SYM(com_unregister_clsid)(com_rclsid_t clsid)
+{
+	size_t c;
+	
+	com__registry_lock();
+	for(c = 0; c < nentries; c++)
+	{
+		if(com_guid_equal(clsid, &(entries[c].clsid)))
+		{
+#ifdef COM_USE_XPCOM
+			if(NULL != entries[c].factory)
+			{
+				xpcom_unregister(&(entries[c].clsid), entries[c].factory);
+			}
+#endif
+			free(entries[c].modulepath);
+			memmove(&entries[c], &(entries[c + 1]), sizeof(registry_entry_t) * (nentries - c - 1));
+			nentries--;
+			com__registry_unlock();
+			return COM_S_OK;
+		}
+	}
+	com__registry_unlock();
+	return COM_E_CLASSNOTREG;
 }
 
 com_result_t
@@ -85,4 +174,20 @@ COM_SYM(com_getclass)(com_rclsid_t clsid, com_context_t context, com_server_t *s
 	return xpcom_getclass(clsid, context, server, riid, out);
 #endif
 	return COM_E_ACCESSDENIED;
+}
+
+static void
+com__registry_lock(void)
+{
+#ifdef COM_USE_PTHREAD
+	pthread_mutex_lock(&registrylock);
+#endif
+}
+
+static void
+com__registry_unlock(void)
+{
+#ifdef COM_USE_PTHREAD
+	pthread_mutex_unlock(&registrylock);
+#endif
 }

@@ -156,6 +156,8 @@ AC_CONFIG_FILES([Makefile
 include/Makefile
 include/com/Makefile
 libcom/Makefile
+libcom-inproc-support/Makefile
+compreg/Makefile
 tests/Makefile
 ])
 

@@ -25,4 +25,10 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-SUBDIRS = include libcom libcom-inproc-support compreg tests
+CPPFLAGS += -I${top_srcdir}/include -I${top_builddir}/include
+
+bin_PROGRAMS = compreg
+
+compreg_SOURCES = compreg.c
+
+compreg_LDADD = ../libcom/libcom.la

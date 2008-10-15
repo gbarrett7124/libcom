@@ -30,35 +30,45 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef P_LIBCOM_H_
-# define P_LIBCOM_H_                   1
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
 
-# if defined(COM_USE_WIN32)
-#  include "p_win32.h"
-# endif
+#include <stdio.h>
+#include "com/com.h"
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# ifdef HAVE_PTHREAD_H
-#  include <pthread.h>
-# endif
-# ifdef HAVE_DLFCN_H
-#  include <dlfcn.h>
-# endif
-# include "com/com.h"
+extern com_result_t com_self_register(void);
+extern com_result_t com_self_unregister(void);
+extern com_result_t com_self_getclass(com_rclsid_t rclsid, com_riid_t riid, void **out);
+extern com_result_t com_self_lockcount(void);
 
-/* We need the local registry regardless of the others */
-# define COM_USE_LOCALREG              1
+COM_EXPORTED com_result_t
+DllRegisterServer(void)
+{
+	fprintf(stderr, "[DllRegisterServer]\n");
+	return com_self_register();
+}
 
-# ifdef COM_USE_XPCOM 
-COM_EXTERNC com_result_t com__xpcom_init(void);
-COM_EXTERNC int com__xpcom_registry_init(void);
-COM_EXTERNC int com__xpcom_taskmem_init(void);
-COM_EXTERNC com_result_t com__xpcom_shutdown(void);
-COM_EXTERNC com_result_t com__xpcom_register(com_rco_t *rcox);
-COM_EXTERNC com_result_t com__xpcom_unregister(com_rclsid_t clsid, IClassFactory *factory);
-COM_EXTERNC com_result_t com__xpcom_getclass(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
-# endif
+COM_EXPORTED com_result_t
+DllUnregisterServer(void)
+{
+	fprintf(stderr, "[DllUnregisterServer]\n");
+	return com_self_unregister();
+}
 
-#endif /* !P_LIBCOM_H_ */
+COM_EXPORTED com_result_t
+DllCanUnloadNow(void)
+{
+	if(0 == com_self_lockcount())
+	{
+		return COM_S_OK;
+	}
+	return COM_S_FALSE;
+}
+
+COM_EXPORTED com_result_t
+DllGetClassObject(com_rclsid_t rclsid, com_riid_t riid, void **out)
+{
+	fprintf(stderr, "[DllGetClassObject]\n");
+	return com_self_getclass(rclsid, riid, out);
+}

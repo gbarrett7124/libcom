@@ -53,10 +53,13 @@ typedef enum com_context_enum
 typedef enum com_regflags_enum
 {
 	COM_REG_SINGLEUSE = 0,
-	COM_REG_MULTIPLEUSE = 1,
-	COM_REG_MULTI_SEPARATE = 2,
-	COM_REG_SUSPENDED = 4,
-	COM_REG_SURROGATE = 8
+	COM_REG_MULTIPLEUSE = (1<<0),
+	COM_REG_MULTI_SEPARATE = (1<<1),
+	COM_REG_SUSPENDED = (1<<2),
+	COM_REG_SURROGATE = (1<<3),
+	
+	COM_REG_PERSISTENT = (1<<30), /* Publish registration information, if possible */
+	COM_REG_ALLUSERS = (1<<31) /* Publish registration globally, if possible */
 } com_regflags_t;
 
 typedef struct com_rco_struct com_rco_t;

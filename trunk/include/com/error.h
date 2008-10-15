@@ -38,6 +38,7 @@
 # endif
 
 # define COM_S_OK                      ((com_result_t) 0)
+# define COM_S_FALSE                   ((com_result_t) 1)
 # define COM_S_NOTALLINTERFACES        ((com_result_t) 0x00080012L)
 
 # define COM_E_ACCESSDENIED            ((com_result_t) 0x80070005L)

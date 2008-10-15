@@ -25,4 +25,12 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-SUBDIRS = include libcom libcom-inproc-support compreg tests
+CPPFLAGS += -I${top_srcdir}/include -I${top_builddir}/include
+
+lib_LTLIBRARIES = libcom-inproc-support.la
+
+libcom_inproc_support_la_SOURCES = win32.c xpcom.c
+
+libcom_inproc_support_la_LIBADD = ../libcom/libcom.la
+
+libcom_inproc_support_la_LDFLAGS = -static -avoid-version

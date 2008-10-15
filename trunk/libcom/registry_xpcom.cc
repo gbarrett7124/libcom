@@ -39,8 +39,12 @@
 #ifdef COM_USE_XPCOM
 
 # include <nsXPCOM.h>
+# include <nsCOMPtr.h>
+# include <nsIFactory.h>
 # include <nsIComponentRegistrar.h>
 # include <nsIComponentManager.h>
+# include <nsILocalFile.h>
+# include <nsEmbedString.h>
 
 static nsIComponentRegistrar *xpcom_registrar;
 static nsIComponentManager *xpcom_components;
@@ -56,26 +60,34 @@ com__xpcom_registry_init(void)
 }
 
 com_result_t
-com__xpcom_register(com_rco_t *rcox, IClassFactory *factory)
+com__xpcom_register(com_rco_t *rcox)
 {
 	nsID classid;
 	com_result_t r;
+	nsCOMPtr<nsILocalFile> fs;
+	union
+	{
+		void *p;
+		nsIFactory *f;
+	} u;
 	
-	r = COM_E_INVALIDARG;
+	r = COM_S_OK;
 	/* You can register a component by pathname if it's in-process */
 	if(0 != (rcox->ctx & (COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER)) &&
-		NULL != rcox->modulepath)
+		NULL != rcox->modulepath &&
+		rcox->flags & COM_REG_PERSISTENT)
 	{
-
+		NS_NewNativeLocalFile(nsEmbedCString(rcox->modulepath), PR_TRUE, getter_AddRefs(fs));
+		xpcom_registrar->AutoRegister(fs);
 	}
-	/* You can only register an existing factory if it's in a running server */
-	if(COM_CTX_LOCAL_SERVER == (rcox->ctx & COM_CTX_LOCAL_SERVER) && NULL != factory)
+	/* You can register an existing factory if it's in a running server */
+	if(COM_CTX_LOCAL_SERVER == (rcox->ctx & COM_CTX_LOCAL_SERVER) && NULL != rcox->factory)
 	{
-		xpcom__convert_to_nsid(classid, *(rcox->clsid));
-		if(rcox->factory)
+		if(COM_S_OK == (r = rcox->factory->lpVtbl->QueryInterface(rcox->factory, IID_IClassFactory, (void **)  &u)))
 		{
-			xpcom_registrar->RegisterFactory(classid, rcox->displayname, rcox->contractid, (nsIFactory *) factory);
-			r = COM_S_OK;
+			xpcom__convert_to_nsid(classid, *(rcox->clsid));
+			xpcom_registrar->RegisterFactory(classid, rcox->displayname, rcox->contractid, u.f);
+			u.f->Release();
 		}
 	}
 	return r;

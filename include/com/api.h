@@ -37,18 +37,6 @@
 #  error Do not include this file directly; use <com/com.h> instead.
 # endif
 
-typedef enum com_context_enum
-{
-	COM_CTX_INPROC_SERVER = (1<<0),
-	COM_CTX_INPROC_HANDLER = (1<<1),
-	COM_CTX_LOCAL_SERVER = (1<<2),
-	COM_CTX_RESERVED1 = (1<<3),
-	COM_CTX_REMOTE_SERVER = (1<<4),
-	
-	COM_CTX_INPROC = (COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER),
-	COM_CTX_SERVER = (COM_CTX_INPROC_SERVER|COM_CTX_LOCAL_SERVER|COM_CTX_REMOTE_SERVER),
-	COM_CTX_ALL = (COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER|COM_CTX_LOCAL_SERVER|COM_CTX_REMOTE_SERVER)
-} com_context_t;
 
 typedef enum com_regflags_enum
 {
@@ -61,10 +49,6 @@ typedef enum com_regflags_enum
 	COM_REG_PERSISTENT = (1<<30), /* Publish registration information, if possible */
 	COM_REG_ALLUSERS = (1<<31) /* Publish registration globally, if possible */
 } com_regflags_t;
-
-typedef struct com_rco_struct com_rco_t;
-typedef struct com_server_struct com_server_t;
-typedef struct com_multiqi_struct com_multiqi_t;
 
 typedef com_result_t (*com_getclassobject_t)(com_rclsid_t clsid, com_riid_t riid, void **out);
 
@@ -96,6 +80,9 @@ extern const com_guid_t GUID_NULL;
 
 COM_CEXPORT com_result_t COM_SYM(com_init)(const char *rdn);
 COM_CEXPORT com_result_t COM_SYM(com_shutdown)(void);
+
+COM_CEXPORT com_result_t COM_SYM(com_registry_add)(ICoRegistry *registry);
+COM_CEXPORT com_result_t COM_SYM(com_registry_remove)(ICoRegistry *registry);
 
 COM_CEXPORT com_result_t COM_SYM(com_getclass)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
 COM_CEXPORT com_result_t COM_SYM(com_register)(com_rco_t *rcox, uint32_t *key);

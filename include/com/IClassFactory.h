@@ -54,13 +54,7 @@ DECLARE_INTERFACE_(IClassFactory, IUnknown)
 	END_INTERFACE
 };
 
-# if !defined(COM_CINTERFACE) && defined(__cplusplus)
-#  define IClassFactory_QueryInterface(__this, riid, out) __this->QueryInterface(riid, out)
-#  define IClassFactory_AddRef(__this) __this->AddRef()
-#  define IClassFactory_Release(__this) __this->Release()
-#  define IClassFactory_CreateInstance(__this, outer, riid, out) __this->CreateInstance(outer, riid, out)
-#  define IClassFactory_LockServer(__this, lock) __this->LockServer(lock)
-# else
+# if defined(COM_CINTERFACE) || !defined(__cplusplus)
 #  define IClassFactory_QueryInterface(__this, riid, out) __this->lpVtbl->QueryInterface(__this, riid, out)
 #  define IClassFactory_AddRef(__this) __this->lpVtbl->AddRef(__this)
 #  define IClassFactory_Release(__this) __this->lpVtbl->Release(__this)

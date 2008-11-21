@@ -36,11 +36,6 @@
 
 #include "p_libcom.h"
 
-/* Our "registry" is actually closer to COM's SCM in terms of what it does,
- * but it also deals indirectly with persistent registrations
- * (COM_REG_PERSISTENT).
- */
-
 #define COM_CTX_LOCALREG \
 	(COM_CTX_LOCAL_SERVER|COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER)
 
@@ -48,15 +43,10 @@ typedef struct registry_entry_struct registry_entry_t;
 
 struct registry_entry_struct
 {
-	int refcount;
-	int incomplete:1;
-	com_rco_t rco;
-	void *module;
-	com_getclassobject_t gco;
+	int incomplete;
 	uint32_t key;
-#ifdef COM_USE_WIN32
-	uint32_t rkey;
-#endif
+	size_t nkeys;
+	uint32_t *keys;
 };
 
 static uint32_t entrykey = 1;
@@ -65,6 +55,7 @@ static size_t nentries;
 #ifdef COM_USE_PTHREAD
 static pthread_mutex_t registrylock = PTHREAD_MUTEX_INITIALIZER;
 #endif
+
 
 static void com__registry_lock(void);
 static void com__registry_unlock(void);
@@ -75,153 +66,172 @@ static com_result_t com__resume(com_rco_t *rco);
 com_result_t
 COM_SYM(com_register)(com_rco_t *rcox, uint32_t *key)
 {
-	IClassFactory *cf;
+	ICoRegistry **providers;
+	size_t nproviders, c;
 	com_result_t r = COM_E_ACCESSDENIED;
-	registry_entry_t *q, t;
-	size_t eid;
+	registry_entry_t *q;
+	int success;
 	
+	com__tryinit();
+	/* If there's no CLSID, a factory instance is meaningless */
+	if(NULL == rcox->clsid)
+	{
+		rcox->factory = NULL;
+	}
+	/* If there's no factory and no filename, we can't do anything */
+	if(NULL == rcox->factory && NULL == rcox->modulepath)
+	{
+		return COM_E_INVALIDARG;
+	}
+	/* If there's no filename and persistent registration is requested,
+	 * fail as we can't fulfil that request.
+	 */
+	if(NULL == rcox->modulepath && COM_REG_PERSISTENT == (rcox->flags & COM_REG_PERSISTENT))
+	{
+		return COM_E_INVALIDARG;
+	}
+	/* If there's a filename but no CLSID, dynamically load the module and
+	 * request self-registration.
+	 */
+	if(NULL == rcox->clsid && NULL != rcox->modulepath)
+	{
+		return com__selfreg_path(rcox->modulepath);
+	}
+	/* We now either have:
+	 * 1. A CLSID and a factory instance
+	 * 2. A CLSID and a filename
+	 * 3. Both
+	 * We can now pass this on to the registry providers to do something
+	 * useful with. If all of the providers return COM_E_NOT_SUPPORTED,
+	 * then that's what we'll return.
+	 */
+	providers = com__reglist_get(&nproviders);
+	if(0 == nproviders)
+	{
+		return COM_E_NOT_SUPPORTED;
+	}
 	com__registry_lock();
+	
 	if(NULL == (q = realloc(entries, sizeof(registry_entry_t) * (nentries + 1))))
 	{
 		com__registry_unlock();
+		com__reglist_release(providers, nproviders);
 		return COM_E_OUTOFMEMORY;
 	}
 	entries = q;
-	eid = nentries;
 	q = &(entries[nentries]);
-	memset(&t, 0, sizeof(registry_entry_t));
 	memset(q, 0, sizeof(registry_entry_t));
+	if(NULL == (q->keys = (uint32_t *) calloc(nproviders, sizeof(uint32_t))))
+	{
+		com__registry_unlock();
+		com__reglist_release(providers, nproviders);
+		return COM_E_OUTOFMEMORY;
+	}
 	q->incomplete = 1;
-	q->refcount = 2;
-	*key = t.key = q->key = entrykey;
+	*key = q->key = entrykey;
 	nentries++;
 	entrykey++;
 	com__registry_unlock();
-	
-	t.refcount = 1;
-	memcpy(&(t.rco), rcox, sizeof(com_rco_t));
-	cf = NULL;
-	if(NULL != rcox->modulepath)
+	q->nkeys = nproviders;
+	success = 0;
+	for(c = 0; c < nproviders; c++)
 	{
-		if(NULL == (t.rco.modulepath = (const char *) strdup(rcox->modulepath)))
+		if(NULL != providers[c])
 		{
-			return COM_E_OUTOFMEMORY;
-		}
-	}
-	if(NULL != rcox->factory)
-	{
-		IUnknown_AddRef(rcox->factory);
-	}
-	if(COM_REG_SUSPENDED != (rcox->flags & COM_REG_SUSPENDED))
-	{
-		r = com__resume(&(t.rco));
-		if(COM_S_OK != r)
-		{
-			if(NULL != rcox->factory)
+			r = ICoRegistry_RegisterClass(providers[c], rcox, &(q->keys[c]));
+			if(COM_S_OK == r)
 			{
-				IUnknown_Release(rcox->factory);
+				success++;
 			}
-			free((char *) t.rco.modulepath);
-			t.rco.modulepath = NULL;
+			else if(COM_E_NOT_SUPPORTED != r)
+			{
+				/* Unwind here */
+				com__reglist_release(providers, nproviders);
+				return r;
+			}
 		}
 	}
-	else
+	com__reglist_release(providers, nproviders);
+	q->incomplete = 0;
+	if(0 == success)
 	{
-		r = COM_S_OK;
+		return COM_E_NOT_SUPPORTED;
 	}
-	com__registry_lock();
-	q = &(entries[eid]);
-	memcpy(q, &t, sizeof(registry_entry_t));
-	com__registry_unlock();
-	return r;
+	return COM_S_OK;
 }
 
 com_result_t
 COM_SYM(com_unregister)(uint32_t key)
 {
-	size_t c;
-	com_result_t r = COM_E_CLASSNOTREG;
+/*	size_t c;
 	
+	com__tryinit();
 	com__registry_lock();
 	for(c = 0; c < nentries; c++)
 	{
+		if(0 != entries[c].incomplete)
+		{
+			continue;
+		}
 		if(key == entries[c].key)
 		{
-			r = com__unregister_entry(c);
-			break;
+			entries[c].incomplete = 1;
+			com__registry_unlock();
+			return com__unregister_entry(c);
 		}
 	}
-	com__registry_unlock();
-	return r;
+	com__registry_unlock(); */
+	return COM_E_CLASSNOTREG;
 }
 
 com_result_t
 COM_SYM(com_unregister_clsid)(com_rclsid_t clsid)
 {
-	size_t c;
-	com_result_t r = COM_E_CLASSNOTREG;
+/*	size_t c;
 	
 	com__registry_lock();
 	for(c = 0; c < nentries; c++)
 	{
+		if(0 != entries[c].incomplete)
+		{
+			continue;
+		}
 		if(com_guid_equal(clsid, &(entries[c].rco.clsid)))
 		{
-			r = com__unregister_entry(c);
-			break;
+			com__registry_unlock();
+			return com__unregister_entry(c);
 		}
 	}
-	com__registry_unlock();
-	return r;
-}
-
-static com_result_t
-com__getclass_entry(size_t index, com_server_t *server, com_riid_t riid, void **out)
-{
-	(void) server;
-	
-	if(NULL != entries[index].rco.factory)
-	{
-		return IUnknown_QueryInterface(entries[index].rco.factory, riid, out);
-	}
-#ifdef COM_USE_DL
-	/* FIXME: Dynamic loading */
-#endif
-	return COM_E_DLLNOTFOUND;
+	com__registry_unlock(); */
+	return COM_E_CLASSNOTREG;
 }
 
 com_result_t
 COM_SYM(com_getclass)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out)
 {
 	com_result_t r;
-	size_t c;
+	size_t nproviders, c;
+	ICoRegistry **providers;
 	
-	r = COM_E_CLASSNOTREG;
-	/* Check the internal registry first */
-	if(0 != (context & COM_CTX_LOCALREG))
+	com__tryinit();
+	providers = com__reglist_get(&nproviders);
+	if(0 != nproviders)
 	{
-		com__registry_lock();
-		for(c = 0; c < nentries; c++)
+		for(c = 0; c < nproviders; c++)
 		{
-			if(com_guid_equal(clsid, &(entries[c].rco.clsid)) && 0 != (entries[c].rco.ctx & context & COM_CTX_LOCALREG))
+			if(NULL != providers[c])
 			{
-				r = com__getclass_entry(c, NULL, riid, out);
-				break;
+				r = ICoRegistry_GetClassObject(providers[c], clsid, context, server, riid, out);
+				if(COM_E_CLASSNOTREG != r)
+				{
+					com__reglist_release(providers, nproviders);
+					return r;
+				}
 			}
 		}
-		com__registry_unlock();
 	}
-	if(COM_E_CLASSNOTREG != r)
-	{
-		return r;
-	}
-#ifdef COM_USE_XPCOM
-	r = com__xpcom_getclass(clsid, context, server, riid, out);
-	if(COM_E_CLASSNOTREG != r)
-	{
-		return r;
-	}
-#endif
-	return r;
+	com__reglist_release(providers, nproviders);
+	return COM_E_CLASSNOTREG;
 }
 
 static void
@@ -241,42 +251,13 @@ com__registry_unlock(void)
 }
 
 static com_result_t
-com__unregister_entry(size_t c)
+com__unregister_entry(size_t index)
 {
-	if(entries[c].refcount > 0) entries[c].refcount--;
-	if(entries[c].refcount > 0) return COM_S_OK;
-#ifdef COM_USE_XPCOM
-/*	if(NULL != entries[c].cf)
-	{
-		com__xpcom_unregister(&(entries[c].rco.clsid), entries[c].cf);
-	} */
-#endif
-	if(NULL != entries[c].rco.factory)
-	{
-		IUnknown_Release(entries[c].rco.factory);
-	}
-	free((char *) entries[c].rco.modulepath);
-	memmove(&entries[c], &(entries[c + 1]), sizeof(registry_entry_t) * (nentries - c - 1));
-	nentries--;
 	return COM_S_OK;
 }
 
 static com_result_t
 com__resume(com_rco_t *rco)
 {
-	com_result_t r = COM_S_OK;
-	
-#ifdef COM_USE_XPCOM
-	if(COM_S_OK != (r = com__xpcom_register(rco)))
-	{
-		return r;
-	}
-#endif
-#ifdef COM_USE_WIN32
-	if(COM_S_OK != (r = com__win32_register(rco)))
-	{
-		return r;
-	}
-#endif
 	return COM_S_OK;
 }

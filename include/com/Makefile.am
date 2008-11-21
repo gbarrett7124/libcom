@@ -30,4 +30,4 @@ comincdir = $(includedir)/com
 cominc_HEADERS = com.h \
 	types.h error.h interfaces.h classes.h \
 	api.h compat.h \
-	IUnknown.h IClassFactory.h IMalloc.h
+	IUnknown.h ICoRegistry.h IClassFactory.h IMalloc.h

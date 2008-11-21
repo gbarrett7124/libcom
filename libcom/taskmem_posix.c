@@ -51,8 +51,6 @@ static com_size_t CoMalloc_GetSize(IMalloc *intf, void *ptr);
 static int CoMalloc_DidAlloc(IMalloc *intf, void *ptr);
 static void CoMalloc_HeapMinimize(IMalloc *intf);
 
-/* #include "taskmem_xpcom.h" */
-
 DECLARE_CLASS(CoMalloc)
 {
 	DECLARE_IMPLEMENTS(CoMalloc, IMalloc);

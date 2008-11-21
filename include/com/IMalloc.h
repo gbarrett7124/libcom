@@ -58,17 +58,7 @@ DECLARE_INTERFACE_(IMalloc, IUnknown)
 	END_INTERFACE
 };
 
-# if !defined(COM_CINTERFACE) && defined(__cplusplus)
-#  define IMalloc_QueryInterface(__this, riid, out) __this->QueryInterface(riid, out)
-#  define IMalloc_AddRef(__this) __this->AddRef()
-#  define IMalloc_Release(__this) __this->Release()
-#  define IMalloc_Alloc(__this, cb) __this->Alloc(cb)
-#  define IMalloc_Realloc(__this, mem, cb) __this->Realloc(mem, cb)
-#  define IMalloc_Free(__this, mem) __this->Free(mem)
-#  define IMalloc_GetSize(__this, mem) __this->GetSize(mem)
-#  define IMalloc_DidAlloc(__this, mem) __this->DidAlloc(mem)
-#  define IMalloc_HeapMinimize(__this) __this->HeapMinimize()
-# else
+# if defined(COM_CINTERFACE) || !defined(__cplusplus)
 #  define IMalloc_QueryInterface(__this, riid, out) __this->lpVtbl->QueryInterface(__this, riid, out)
 #  define IMalloc_AddRef(__this) __this->lpVtbl->AddRef(__this)
 #  define IMalloc_Release(__this) __this->lpVtbl->Release(__this)

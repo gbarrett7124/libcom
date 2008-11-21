@@ -74,6 +74,7 @@
 # include "com/interfaces.h"
 
 # include "com/IUnknown.h"
+# include "com/ICoRegistry.h"
 # include "com/IClassFactory.h"
 # include "com/IMalloc.h"
 

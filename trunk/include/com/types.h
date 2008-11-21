@@ -61,6 +61,29 @@ struct com_guid_struct
 	uint8_t data4[8];
 };
 
+/* Make the identifiers available early so the interfaces we define can
+ * specify that they pass pointers to them ahead of us defining what
+ * they actually are.
+ */
+
+typedef struct com_rco_struct com_rco_t;
+typedef struct com_server_struct com_server_t;
+typedef struct com_multiqi_struct com_multiqi_t;
+
+typedef enum com_context_enum
+{
+	COM_CTX_INPROC_SERVER = (1<<0),
+	COM_CTX_INPROC_HANDLER = (1<<1),
+	COM_CTX_LOCAL_SERVER = (1<<2),
+	COM_CTX_RESERVED1 = (1<<3),
+	COM_CTX_REMOTE_SERVER = (1<<4),
+	
+	COM_CTX_INPROC = (COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER),
+	COM_CTX_SERVER = (COM_CTX_INPROC_SERVER|COM_CTX_LOCAL_SERVER|COM_CTX_REMOTE_SERVER),
+	COM_CTX_ALL = (COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER|COM_CTX_LOCAL_SERVER|COM_CTX_REMOTE_SERVER)
+} com_context_t;
+
+
 # undef DEFINE_GUID
 # define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
 	COM_EXTERNC const com_guid_t name

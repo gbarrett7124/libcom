@@ -38,51 +38,76 @@
 
 #ifdef COM_USE_PTHREAD
 static pthread_mutex_t initlock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_key_t initkey;
+static uint32_t initdummy = 0xFEEDFACE;
 #endif
-static int initcount;
+
+static inline int
+com__init_global(void)
+{
+	/* initlock should already be held at this point */
+#ifdef COM_USE_PTHREAD
+	if(initkey) return 0;
+	pthread_key_create(&initkey, NULL);
+#endif
+	return 1;
+}
+
+static inline void
+com__init_perthread(void)
+{
+#ifdef COM_USE_PTHREAD
+	if(NULL != pthread_getspecific(initkey))
+	{
+		return;
+	}
+#endif
+#ifdef COM_USE_WIN32
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+#endif
+#ifdef COM_USE_PTHREAD
+	pthread_setspecific(initkey, &initdummy);
+#endif
+}
+
+void
+com__tryinit(void)
+{
+	int r;
+	
+	pthread_mutex_lock(&initlock);
+	r = com__init_global();
+	com__init_perthread();
+	pthread_mutex_unlock(&initlock);
+	if(r)
+	{
+		/* One-time initialiation */
+#ifdef COM_USE_LOCALREG
+		com__registry_local_init();
+#endif
+#ifdef COM_USE_WIN32
+		com__registry_win32_init();
+#endif
+#ifdef COM_USE_XPCOM
+		com__registry_xpcom_init();
+#endif
+#ifdef COM_USE_CFPLUGIN
+		com__registry_cfplugin_init();
+#endif
+	}
+}
 
 /* Initialise COM for the current thread */
 com_result_t
 COM_SYM(com_init)(const char *appname)
 {
-#ifdef COM_USE_PTHREAD
-	pthread_mutex_lock(&initlock);
-#endif
-#ifdef COM_USE_WIN32
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-#endif
-	if(0 == initcount)
-	{
-#ifdef COM_USE_XPCOM
-		com__xpcom_init();
-#endif
-	}
-	initcount++;
-#ifdef COM_USE_PTHREAD
-	pthread_mutex_unlock(&initlock);
-#endif
+	com__tryinit();
 	return COM_S_OK;
 }
 
 com_result_t
 COM_SYM(com_shutdown)(void)
 {
-#ifdef COM_USE_PTHREAD
-	pthread_mutex_lock(&initlock);
-#endif
-#ifdef COM_USE_WIN32
-	CoUninitialize();
-#endif
-	initcount--;
-#ifdef COM_USE_XPCOM
-	if(0 == initcount)
-	{
-		com__xpcom_shutdown();
-	}
-#endif
-#ifdef COM_USE_PTHREAD
-	pthread_mutex_unlock(&initlock);
-#endif
 	return COM_S_OK;
 }
 
@@ -91,7 +116,8 @@ COM_COMPAT(CoInitialize)(void *reserved)
 {
 	(void) reserved;
 	
-	return com_init(NULL);
+	com__tryinit();
+	return COM_S_OK;
 }
 
 com_result_t
@@ -100,5 +126,6 @@ COM_COMPAT(CoInitializeEx)(void *reserved, uint32_t flags)
 	(void) reserved;
 	(void) flags;
 	
-	return com_init(NULL);
+	com__tryinit();
+	return COM_S_OK;
 }

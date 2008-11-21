@@ -49,11 +49,7 @@ DECLARE_INTERFACE(IUnknown)
 	END_INTERFACE
 };
 
-# if !defined(COM_CINTERFACE) && defined(__cplusplus)
-#  define IUnknown_QueryInterface(__this, riid, out) __this->QueryInterface(riid, out)
-#  define IUnknown_AddRef(__this) __this->AddRef()
-#  define IUnknown_Release(__this) __this->Release()
-# else
+# if defined(COM_CINTERFACE) || !defined(__cplusplus)
 #  define IUnknown_QueryInterface(__this, riid, out) __this->lpVtbl->QueryInterface(__this, riid, out)
 #  define IUnknown_AddRef(__this) __this->lpVtbl->AddRef(__this)
 #  define IUnknown_Release(__this) __this->lpVtbl->Release(__this)

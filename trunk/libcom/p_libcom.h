@@ -51,6 +51,11 @@
 /* We need the local registry regardless of the others */
 # define COM_USE_LOCALREG              1
 
+COM_EXTERNC void com__tryinit(void);
+
+ICoRegistry **com__reglist_get(size_t *count);
+void com__reglist_release(ICoRegistry **list, size_t count);
+
 # ifdef COM_USE_XPCOM 
 COM_EXTERNC com_result_t com__xpcom_init(void);
 COM_EXTERNC int com__xpcom_registry_init(void);
@@ -59,6 +64,20 @@ COM_EXTERNC com_result_t com__xpcom_shutdown(void);
 COM_EXTERNC com_result_t com__xpcom_register(com_rco_t *rcox);
 COM_EXTERNC com_result_t com__xpcom_unregister(com_rclsid_t clsid, IClassFactory *factory);
 COM_EXTERNC com_result_t com__xpcom_getclass(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
+# endif
+
+/* Registry providers */
+# ifdef COM_USE_LOCALREG
+COM_EXTERNC com_result_t com__registry_local_init(void);
+# endif
+# ifdef COM_USE_WIN32
+COM_EXTERNC com_result_t com__registry_win32_init(void);
+# endif
+# ifdef COM_USE_XPCOM
+COM_EXTERNC com_result_t com__registry_xpcom_init(void);
+# endif
+# ifdef COM_USE_CFPLUGIN
+COM_EXTERNC com_result_t com__registry_cfplugin_init(void);
 # endif
 
 #endif /* !P_LIBCOM_H_ */

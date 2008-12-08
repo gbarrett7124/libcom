@@ -69,6 +69,9 @@
 # define DEFINE_CLASS_INTERFACE(__classname, __intf) \
 	static const struct __intf##Vtbl __classname##_##__intf =
 
+# define GET_CLASS_INTERFACE(__classname, __intf) \
+	__classname##_##__intf
+
 # define INITIALISE_INTERFACE_POINTER(__classname, __instance, __intf) \
 	if(NULL == (__instance)->__intf##_.i.lpVtbl) \
 	{ \

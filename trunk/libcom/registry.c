@@ -128,7 +128,10 @@ COM_SYM(com_register)(com_rco_t *rcox, uint32_t *key)
 		return COM_E_OUTOFMEMORY;
 	}
 	q->incomplete = 1;
-	*key = q->key = entrykey;
+	if(NULL != key)
+	{
+		*key = q->key = entrykey;
+	}
 	nentries++;
 	entrykey++;
 	com__registry_unlock();

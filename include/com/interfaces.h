@@ -41,6 +41,9 @@
  * Windows.
  */
 
+# undef FWD_DECLARE_INTERFACE
+# define FWD_DECLARE_INTERFACE(__intf) struct __intf;
+
 # undef DECLARE_INTERFACE
 # undef DECLARE_INTERFACE_
 # define DECLARE_INTERFACE(__intf) \

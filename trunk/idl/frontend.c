@@ -313,7 +313,6 @@ idir_list, cpp_output)
 #ifndef VMS
     if ((*cpp_output = popen(cmd, "r")) == 0)
         error(NIDL_INVOKECPP);
-	fprintf(stderr, "Preprocessing complete\n");
 #endif
 }
 #endif

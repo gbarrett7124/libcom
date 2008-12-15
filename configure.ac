@@ -150,6 +150,25 @@ fi
 AC_SUBST([XPCOM_LIBS])
 AC_SUBST([XPCOM_CPPFLAGS])
 
+AM_PROG_LEX
+AC_PROG_YACC
+AC_PROG_SED
+AC_PATH_PROG([GENCAT], [gencat], [true])
+AC_SUBST([GENCAT])
+AC_CHECK_FUNCS([catopen])
+
+IDL_CFLAGS='-D_GNU_SOURCE -D_REENTRANT -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_POSIX_C_SOURCE=3'
+IDL_CC="$CC"
+if test x"${ac_cv_prog_gcc}" = x"yes" ; then
+	IDL_CPP="$CPP -x c-header"
+else
+	IDL_CPP=""
+fi
+
+AC_SUBST([IDL_CFLAGS])
+AC_SUBST([IDL_CC])
+AC_SUBST([IDL_CPP])
+
 AC_CONFIG_HEADER([config.h])
 
 AC_CONFIG_FILES([Makefile
@@ -159,6 +178,8 @@ libcom/Makefile
 libcom-inproc-support/Makefile
 compreg/Makefile
 tests/Makefile
+idl/Makefile
+idl/sysdep.h
 ])
 
 AC_OUTPUT

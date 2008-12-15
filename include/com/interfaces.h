@@ -71,7 +71,7 @@
 
 # if defined(__cplusplus) && !defined(COM_CINTERFACE)
 #  define FWD_DECLARE_INTERFACE(__intf) \
-	struct __intf;
+	cominterface __intf;
 #  define PURE                         = 0
 #  define THIS_                        /* */
 #  define THIS                         void
@@ -92,13 +92,12 @@
 #  endif /* __GNUC__ && __GNUC__ < 3 */
 # else /* __cplusplus && !COM_CINTERFACE */
 #  define FWD_DECLARE_INTERFACE(__intf) \
-	struct __intf;
+	cominterface __intf;
 #  define DECLARE_INTERFACE(__intf) \
-	typedef struct __intf __intf; \
-	typedef struct __intf##Vtbl __intf##Vtbl; \
-	struct __intf { \
+	typedef cominterface __intf { \
 		const struct __intf##Vtbl *lpVtbl; \
-	}; \
+	} __intf; \
+	typedef const struct __intf##Vtbl __intf##Vtbl; \
 	\
 	struct __intf##Vtbl
 #  define DECLARE_INTERFACE_(__intf, __parent) \

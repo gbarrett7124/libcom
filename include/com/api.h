@@ -81,6 +81,9 @@ extern const com_guid_t GUID_NULL;
 COM_CEXPORT com_result_t COM_SYM(com_init)(const char *rdn);
 COM_CEXPORT com_result_t COM_SYM(com_shutdown)(void);
 
+COM_CEXPORT com_result_t COM_SYM(com_guid_generate)(com_guid_t *guid);
+COM_CEXPORT com_result_t COM_SYM(com_guid_tostr)(const com_guid_t *guid, char *buf, size_t buflen);
+
 COM_CEXPORT com_result_t COM_SYM(com_registry_add)(ICoRegistry *registry);
 COM_CEXPORT com_result_t COM_SYM(com_registry_remove)(ICoRegistry *registry);
 

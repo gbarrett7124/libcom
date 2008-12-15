@@ -41,15 +41,15 @@
 
 # define COTASKMEM_SIGNATURE            0xCAFECAFE
 
-static com_result_t CoMalloc_QueryInterface(IMalloc *intf, com_riid_t iid, void **out);
-static uint32_t CoMalloc_AddRef(IMalloc *intf);
-static uint32_t CoMalloc_Release(IMalloc *intf);
-static void *CoMalloc_Alloc(IMalloc *intf, com_size_t size);
-static void CoMalloc_Free(IMalloc *intf, void *ptr);
-static void *CoMalloc_Realloc(IMalloc *intf, void *ptr, com_size_t size);
-static com_size_t CoMalloc_GetSize(IMalloc *intf, void *ptr);
-static int CoMalloc_DidAlloc(IMalloc *intf, void *ptr);
-static void CoMalloc_HeapMinimize(IMalloc *intf);
+static com_result_t __stdcall CoMalloc_QueryInterface(IMalloc *intf, com_riid_t iid, void **out);
+static uint32_t __stdcall CoMalloc_AddRef(IMalloc *intf);
+static uint32_t __stdcall CoMalloc_Release(IMalloc *intf);
+static void *__stdcall CoMalloc_Alloc(IMalloc *intf, com_size_t size);
+static void __stdcall CoMalloc_Free(IMalloc *intf, void *ptr);
+static void *__stdcall CoMalloc_Realloc(IMalloc *intf, void *ptr, com_size_t size);
+static com_size_t __stdcall CoMalloc_GetSize(IMalloc *intf, void *ptr);
+static int __stdcall CoMalloc_DidAlloc(IMalloc *intf, void *ptr);
+static void __stdcall CoMalloc_HeapMinimize(IMalloc *intf);
 
 DECLARE_CLASS(CoMalloc)
 {
@@ -113,7 +113,7 @@ COM_COMPAT(CoTaskMemRealloc)(void *ptr, com_size_t newsize)
 	return CoMalloc_Realloc(NULL, ptr, newsize);
 }
 
-static com_result_t
+static com_result_t __stdcall
 CoMalloc_QueryInterface(IMalloc *intf, com_riid_t iid, void **out)
 {
 	if(com_guid_equal(iid, &IID_IUnknown) || com_guid_equal(iid, &IID_IMalloc))
@@ -125,7 +125,7 @@ CoMalloc_QueryInterface(IMalloc *intf, com_riid_t iid, void **out)
 	return COM_E_NOINTERFACE;
 }
 
-static uint32_t
+static uint32_t __stdcall
 CoMalloc_AddRef(IMalloc *intf)
 {
 	(void) intf;
@@ -133,7 +133,7 @@ CoMalloc_AddRef(IMalloc *intf)
 	return 2;
 }
 
-static uint32_t
+static uint32_t __stdcall
 CoMalloc_Release(IMalloc *intf)
 {
 	(void) intf;
@@ -141,7 +141,7 @@ CoMalloc_Release(IMalloc *intf)
 	return 1;
 }
 
-static void *
+static void * __stdcall
 CoMalloc_Alloc(IMalloc *intf, com_size_t size)
 {
 	uint32_t *p;
@@ -157,7 +157,7 @@ CoMalloc_Alloc(IMalloc *intf, com_size_t size)
 	return &(p[2]);
 }
 
-static void
+static void __stdcall
 CoMalloc_Free(IMalloc *intf, void *ptr)
 {
 	uint32_t *p = (uint32_t *) ptr;
@@ -176,7 +176,7 @@ CoMalloc_Free(IMalloc *intf, void *ptr)
 	free(p);
 }
 
-static void *
+static void * __stdcall
 CoMalloc_Realloc(IMalloc *intf, void *ptr, com_size_t size)
 {
 	uint32_t *p = (uint32_t *) ptr, *q;
@@ -199,13 +199,13 @@ CoMalloc_Realloc(IMalloc *intf, void *ptr, com_size_t size)
 	return NULL;
 }
 
-static void
+static void __stdcall
 CoMalloc_HeapMinimize(IMalloc *intf)
 {
 	(void) intf;
 }
 
-static com_size_t
+static com_size_t __stdcall
 CoMalloc_GetSize(IMalloc *intf, void *ptr)
 {
 	uint32_t *p = (uint32_t *) ptr;
@@ -224,7 +224,7 @@ CoMalloc_GetSize(IMalloc *intf, void *ptr)
 	return p[1];
 }
 
-static int
+static int __stdcall
 CoMalloc_DidAlloc(IMalloc *intf, void *ptr)
 {
 	uint32_t *p = (uint32_t *) ptr;

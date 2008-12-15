@@ -38,13 +38,13 @@
 
 #ifdef COM_USE_LOCALREG
 
-static com_result_t CoLocalReg_QueryInterface(ICoRegistry *intf, com_riid_t iid, void **out);
-static uint32_t CoLocalReg_AddRef(ICoRegistry *intf);
-static uint32_t CoLocalReg_Release(ICoRegistry *intf);
-static com_result_t CoLocalReg_RegisterClass(ICoRegistry *intf, com_rco_t *rco, uint32_t *key);
-static com_result_t CoLocalReg_UnregisterClassKey(ICoRegistry *intf, uint32_t key);
-static com_result_t CoLocalReg_UnregisterClassID(ICoRegistry *intf, com_rclsid_t clsid);
-static com_result_t CoLocalReg_GetClassObject(ICoRegistry *intf, com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
+static com_result_t __stdcall CoLocalReg_QueryInterface(ICoRegistry *intf, com_riid_t iid, void **out);
+static uint32_t __stdcall CoLocalReg_AddRef(ICoRegistry *intf);
+static uint32_t __stdcall CoLocalReg_Release(ICoRegistry *intf);
+static com_result_t __stdcall CoLocalReg_RegisterClass(ICoRegistry *intf, com_rco_t *rco, uint32_t *key);
+static com_result_t __stdcall CoLocalReg_UnregisterClassKey(ICoRegistry *intf, uint32_t key);
+static com_result_t __stdcall CoLocalReg_UnregisterClassID(ICoRegistry *intf, com_rclsid_t clsid);
+static com_result_t __stdcall CoLocalReg_GetClassObject(ICoRegistry *intf, com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
 
 # ifdef COM_USE_PTHREAD
 static pthread_mutex_t reglock = PTHREAD_MUTEX_INITIALIZER;
@@ -102,7 +102,7 @@ com__registry_local_init(void)
 	return r;
 }
 
-static com_result_t
+static com_result_t __stdcall
 CoLocalReg_QueryInterface(ICoRegistry *intf, com_riid_t iid, void **out)
 {
 	if(com_guid_equal(iid, &IID_IUnknown) || com_guid_equal(iid, &IID_ICoRegistry))
@@ -114,7 +114,7 @@ CoLocalReg_QueryInterface(ICoRegistry *intf, com_riid_t iid, void **out)
 	return COM_E_NOINTERFACE;
 }
 
-static uint32_t
+static uint32_t __stdcall
 CoLocalReg_AddRef(ICoRegistry *intf)
 {
 	(void) intf;
@@ -122,7 +122,7 @@ CoLocalReg_AddRef(ICoRegistry *intf)
 	return 2;
 }
 
-static uint32_t
+static uint32_t __stdcall
 CoLocalReg_Release(ICoRegistry *intf)
 {
 	(void) intf;
@@ -130,7 +130,7 @@ CoLocalReg_Release(ICoRegistry *intf)
 	return 1;
 }
 
-static com_result_t
+static com_result_t __stdcall
 CoLocalReg_RegisterClass(ICoRegistry *intf, com_rco_t *rco, uint32_t *key)
 {
 	localreg_entry_t *q;
@@ -186,7 +186,7 @@ CoLocalReg_RegisterClass(ICoRegistry *intf, com_rco_t *rco, uint32_t *key)
 	return COM_S_OK;
 }
 
-static com_result_t
+static com_result_t __stdcall
 CoLocalReg_UnregisterClassKey(ICoRegistry *intf, uint32_t key)
 {
 	size_t c;
@@ -212,7 +212,7 @@ CoLocalReg_UnregisterClassKey(ICoRegistry *intf, uint32_t key)
 	return COM_E_CLASSNOTREG;
 }
 
-static com_result_t
+static com_result_t __stdcall
 CoLocalReg_UnregisterClassID(ICoRegistry *intf, com_rclsid_t clsid)
 {
 	size_t c;
@@ -238,7 +238,7 @@ CoLocalReg_UnregisterClassID(ICoRegistry *intf, com_rclsid_t clsid)
 	return COM_E_CLASSNOTREG;
 }
 
-static com_result_t
+static com_result_t __stdcall
 CoLocalReg_GetClassObject(ICoRegistry *intf, com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out)
 {
 	size_t c;

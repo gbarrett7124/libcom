@@ -42,11 +42,58 @@
  */
 
 # undef FWD_DECLARE_INTERFACE
-# define FWD_DECLARE_INTERFACE(__intf) struct __intf;
-
 # undef DECLARE_INTERFACE
 # undef DECLARE_INTERFACE_
-# define DECLARE_INTERFACE(__intf) \
+# undef PURE
+# undef THIS
+# undef THIS_
+# undef BEGIN_INTERFACE
+# undef END_INTERFACE
+# undef STDMETHOD
+# undef STDMETHOD_
+
+# if !defined(__OBJC__)
+#  undef interface
+#  define interface struct
+# endif
+
+# undef cominterface
+# define cominterface struct
+
+# if defined(__GNUC__)
+#  if !defined(__stdcall)
+#   define __stdcall                   __attribute__((stdcall))
+#  endif
+# endif
+
+# undef COM_STDMETHODCALLTYPE
+# define COM_STDMETHODCALLTYPE         __stdcall
+
+# if defined(__cplusplus) && !defined(COM_CINTERFACE)
+#  define FWD_DECLARE_INTERFACE(__intf) \
+	struct __intf;
+#  define PURE                         = 0
+#  define THIS_                        /* */
+#  define THIS                         void
+#  define STDMETHOD(__name) \
+	virtual com_result_t COM_STDMETHODCALLTYPE __name
+#  define STDMETHOD_(__type, __name) \
+	virtual __type COM_STDMETHODCALLTYPE __name
+#  if defined(__GNUC__) && __GNUC__ < 3
+#   define DECLARE_INTERFACE(__intf) \
+	struct __attribute__((com_interface)) __intf
+#   define DECLARE_INTERFACE_(__intf, __parent) \
+	struct __attribute__((com_interface)) __intf : public __parent
+#  else
+#   define DECLARE_INTERFACE(__intf) \
+	struct __intf
+#   define DECLARE_INTERFACE_(__intf, __parent) \
+	struct __intf : public __parent
+#  endif /* __GNUC__ && __GNUC__ < 3 */
+# else /* __cplusplus && !COM_CINTERFACE */
+#  define FWD_DECLARE_INTERFACE(__intf) \
+	struct __intf;
+#  define DECLARE_INTERFACE(__intf) \
 	typedef struct __intf __intf; \
 	typedef struct __intf##Vtbl __intf##Vtbl; \
 	struct __intf { \
@@ -54,26 +101,16 @@
 	}; \
 	\
 	struct __intf##Vtbl
-
-# define DECLARE_INTERFACE_(__intf, __parent) \
+#  define DECLARE_INTERFACE_(__intf, __parent) \
 	DECLARE_INTERFACE(__intf)
+#  define PURE                          /* */
+#  define THIS                          INTERFACE *This
+#  define THIS_                         INTERFACE *This,
+#  define STDMETHOD(__name)             com_result_t (COM_STDMETHODCALLTYPE *__name)
+#  define STDMETHOD_(__type,__name)     __type (COM_STDMETHODCALLTYPE *__name)
+# endif /* !__cplusplus || COM_CINTERFACE */
 
-# undef PURE
-# define PURE                          /* */
-
-# undef THIS
-# undef THIS_
-# define THIS                          INTERFACE *This
-# define THIS_                         INTERFACE *This,
-
-# undef BEGIN_INTERFACE
-# undef END_INTERFACE
 # define BEGIN_INTERFACE               /* */
 # define END_INTERFACE                 /* */
-
-# undef STDMETHOD
-# undef STDMETHOD_
-# define STDMETHOD(__name)             com_result_t (*__name)
-# define STDMETHOD_(__type,__name)     __type (*__name)
 
 #endif /* !COM_INTERFACES_H_ */

@@ -30,6 +30,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/*! \file
+ * \addtogroup functions Function reference
+ * \addtogroup win32 Win32/Win64 compatibility
+ */
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -97,19 +102,65 @@ com__tryinit(void)
 	}
 }
 
-/* Initialise COM for the current thread */
+/**
+ * @brief Initialise COM for the current thread.
+ * @param[in] identifier An optional application identifier in reverse-DNS (Java-style/UTI) format.
+ * @return On success, @c COM_S_OK is returned. On error, an appropriate \c com_result_t value is returned.
+ * @headerfile com.h <com/com.h>
+ * @ingroup functions
+ *
+ * \p com_init() explicitly performs initialisation necessary to use COM in a
+ * thread, optionally specifying an application identifier which causes
+ * a private per-application registry to be used instead of the global
+ * COM registry in environments where this is supported.
+ *
+ * If \a identifier is specified and \p com_init() has previously been called,
+ * it will be ignored.
+ *
+ * If \p com_init() is not explicitly called for a thread, the equivalent of
+ * \p com_init(NULL) will be invoked automatically.
+ *
+ * @note On Win32/Win64, \p com_init() calls \p CoInitializeEx(NULL, COINIT_MULTITHREADED)
+ *
+ * @sa com_result_t, com_shutdown()
+ */
+ 
 com_result_t
-COM_SYM(com_init)(const char *appname)
+COM_SYM(com_init)(const char *identifier)
 {
 	com__tryinit();
 	return COM_S_OK;
 }
+
+/**
+ * @brief Release resources retained by COM in the current thread.
+ * @return On success, @c COM_S_OK is returned.
+ * @headerfile com.h <com/com.h>
+ * @ingroup functions
+ *
+ * \p com_shutdown() releases resources maintained by the COM runtime during
+ * normal operation. You should call \p com_shutdown() for each thread which
+ * uses COM functions in order to prevent resource leaks.
+ *
+ * @sa com_init()
+ */
 
 com_result_t
 COM_SYM(com_shutdown)(void)
 {
 	return COM_S_OK;
 }
+
+/**
+ * @brief Initialise COM for the current thread.
+ * @return On success, \c COM_S_OK is returned.
+ * @headerfile com.h <com/com.h>
+ * @ingroup win32
+ *
+ * Calling \p CoInitialize() is the equivalent of calling \p com_init(NULL)
+ *
+ * @sa com_init(), CoInitializeEx()
+ */
 
 com_result_t
 COM_COMPAT(CoInitialize)(void *reserved)
@@ -119,6 +170,23 @@ COM_COMPAT(CoInitialize)(void *reserved)
 	com__tryinit();
 	return COM_S_OK;
 }
+
+/**
+ * @brief Initialise COM for the current thread.
+ * @param[in] reserved Ignored.
+ * @param[in] flags Ignored.
+ * @return On success, \c COM_S_OK is returned.
+ * @headerfile com.h <com/com.h>
+ * @ingroup win32
+ *
+ * Calling \p CoInitializeEx() is the equivalent of calling \p com_init(NULL)
+ *
+ * @note Under Win32/Win64’s native COM implementation, various values can be
+ * passed as the \p flags parameter. libcom always ignores the value of
+ * \p flags and behaves as though \p flags was set to \p COINIT_MULTITHREADED.
+ *
+ * @sa com_init(), CoInitialize()
+ */
 
 com_result_t
 COM_COMPAT(CoInitializeEx)(void *reserved, uint32_t flags)

@@ -45,11 +45,11 @@
 #define INITGUID
 #include "test-2-guids.h"
 
-static com_result_t Test2_ITester2_QueryInterface(ITester2 *intf, com_riid_t iid, void **out);
-static uint32_t Test2_ITester2_AddRef(ITester2 *intf);
-static uint32_t Test2_ITester2_Release(ITester2 *intf);
-static com_result_t Test2_ITester2_Set(ITester2 *intf, int newval);
-static int Test2_ITester2_Get(ITester2 *intf);
+static com_result_t __stdcall Test2_ITester2_QueryInterface(ITester2 *intf, com_riid_t iid, void **out);
+static uint32_t __stdcall Test2_ITester2_AddRef(ITester2 *intf);
+static uint32_t __stdcall Test2_ITester2_Release(ITester2 *intf);
+static com_result_t __stdcall Test2_ITester2_Set(ITester2 *intf, int newval);
+static int __stdcall Test2_ITester2_Get(ITester2 *intf);
 
 DEFINE_CLASS_INTERFACE(Test2, ITester2)
 {
@@ -82,7 +82,7 @@ new_Test2(IUnknown *outer, com_rclsid_t riid, void **out, int defval)
 	return r;
 }
 
-static com_result_t 
+static com_result_t __stdcall
 Test2_ITester2_QueryInterface(ITester2 *intf, com_riid_t iid, void **out)
 {
 	if(com_guid_equal(iid, &IID_IUnknown) || com_guid_equal(iid, &IID_ITester2))
@@ -96,7 +96,7 @@ Test2_ITester2_QueryInterface(ITester2 *intf, com_riid_t iid, void **out)
 	return COM_E_NOINTERFACE;
 }
 
-static uint32_t 
+static uint32_t __stdcall
 Test2_ITester2_AddRef(ITester2 *intf)
 {
 	DECLARE_SELF(Test2, ITester2, intf);
@@ -106,7 +106,7 @@ Test2_ITester2_AddRef(ITester2 *intf)
 	return self->refcount;
 }
 
-static uint32_t
+static uint32_t __stdcall
 Test2_ITester2_Release(ITester2 *intf)
 {
 	DECLARE_SELF(Test2, ITester2, intf);
@@ -122,7 +122,7 @@ Test2_ITester2_Release(ITester2 *intf)
 	return self->refcount;
 }
 
-static com_result_t
+static com_result_t __stdcall
 Test2_ITester2_Set(ITester2 *intf, int newval)
 {
 	DECLARE_SELF(Test2, ITester2, intf);
@@ -132,7 +132,7 @@ Test2_ITester2_Set(ITester2 *intf, int newval)
 	return COM_S_OK;
 }
 
-static int
+static int __stdcall
 Test2_ITester2_Get(ITester2 *intf)
 {
 	DECLARE_SELF(Test2, ITester2, intf);

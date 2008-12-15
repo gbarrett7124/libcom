@@ -37,6 +37,10 @@
 #  error Do not include this file directly; use <com/com.h> instead.
 # endif
 
+/*! \file
+ * \addtogroup types Types reference
+ */
+
 # define COM_S_OK                      ((com_result_t) 0)
 # define COM_S_FALSE                   ((com_result_t) 1)
 # define COM_S_NOTALLINTERFACES        ((com_result_t) 0x00080012L)

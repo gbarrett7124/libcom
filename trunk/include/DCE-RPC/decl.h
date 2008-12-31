@@ -33,6 +33,8 @@
  */
 
 #undef RPC_EXPORT
+#undef RPC_LOCAL_SYM
+#undef RPC_ALIAS
 #undef RPC_SYM
 #undef RPC_EXPORTED
 #undef RPC_IMPORTED
@@ -40,15 +42,46 @@
 #undef RPC_DECLAREC
 #undef RPC_EXPORT
 #undef RPC_CEXPORT
+#undef RPC_ALIAS_MACROS
+
+#if !defined(RPC__STRING)
+# define RPC__TOSTRING(__x)             #__x
+# define RPC__STRING(__x)               RPC__TOSTRING(__x)
+# define RPC__STRING2(__x, __y)         RPC__TOSTRING(__x) RPC__TOSTRING(__y)
+# define RPC__STRING3(__x, __y, __z)    RPC__TOSTRING(__x) RPC__TOSTRING(__y) RPC__TOSTRING(__z)
+#endif
 
 #if defined(RPC_SYM_PREFIX) && defined(RPC_SYM_SUFFIX)
-# define RPC_SYM(x)                    RPC_SYM_PREFIX##x##RPC_SYM_SUFFIX
+# define RPC_LOCAL_SYM(__x)            RPC_SYM_PREFIX##__x##RPC_SYM_SUFFIX
+# define RPC_LOCAL_SYMSTR(__x)         RPC__STRING3(RPC_SYM_PREFIX, __x, RPC_SYM_SUFFIX)
 #elif defined(RPC_SYM_PREFIX)
-# define RPC_SYM(x)                    RPC_SYM_PREFIX##x
+# define RPC_LOCAL_SYM(__x)            RPC_SYM_PREFIX##__x
+# define RPC_LOCAL_SYMSTR(__x)         RPC__STRING2(RPC_SYM_PREFIX, __x)
 #elif defined(RPC_SYM_SUFFIX)
-# define RPC_SYM(x)                    x##RPC_SYM_SUFFIX
+# define RPC_LOCAL_SYM(__x)            __x##RPC_SYM_SUFFIX
+# define RPC_LOCAL_SYMSTR(__x)         RPC__STRING2(__x, RPC_SYM_SUFFIX)
+#endif
+
+#if !defined(RPC_ASM_PREFIX)
+# if defined(_WIN32) || defined(__DARWIN__)
+#  define RPC_ASM_PREFIX               "_"
+# else
+#  define RPC_ASM_PREFIX               ""
+# endif
+#endif
+
+#if defined RPC_LOCAL_SYM
+# if defined(__GNUC__)
+#  define RPC_SYM(__x)                 __x
+#  define RPC_ALIAS(__x)               __asm(RPC_ASM_PREFIX RPC_LOCAL_SYMSTR(__x))
+# else
+#  define RPC_SYM(__x)                 RPC_LOCAL_SYM(__x)
+#  define RPC_ALIAS(__x)               /* */
+#  define RPC_ALIAS_MACROS             1
+# endif
 #else
-# define RPC_SYM(x)                    x
+# define RPC_SYM(__x)                  __x
+# define RPC_ALIAS(__x)                /* */
 #endif
 
 #if defined(_WIN32)

@@ -32,10 +32,18 @@
 #ifndef DCE_RPC_DCE_RPC_H_
 # define DCE_RPC_DCE_RPC_H_            1
 
+/* Prevent clashes with system-supplied uuid_t */
+
+# define uuid_t                        dcerpc_uuid_t
+
 # include "DCE-RPC/idlbase.h"
 # include "DCE-RPC/nbase.h"
 # include "DCE-RPC/lbase.h"
 
+# define RPC_SYM_PREFIX                DCERPC_
+
 # include "DCE-RPC/uuid.h"
+
+# undef RPC_SYM_PREFIX
 
 #endif /*!DCE_RPC_DCE_RPC_H_ */

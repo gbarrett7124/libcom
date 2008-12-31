@@ -76,7 +76,6 @@
 # define COM_COMPAT(__x)               com_##__x
 
 # include "com/types.h"
-# include "com/guid.h"
 # include "com/error.h"
 # include "com/interfaces.h"
 

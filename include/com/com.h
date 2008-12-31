@@ -37,6 +37,12 @@
 # include <inttypes.h>
 # include <string.h>
 
+# if defined(__GNUC__)
+#  if !defined(__stdcall)
+#   define __stdcall                   __attribute__((stdcall))
+#  endif
+# endif
+
 # if defined(_WIN32)
 #  if defined(__GNUC__)
 #   define COM_EXPORTED                __attribute__((dllexport))

@@ -60,12 +60,6 @@
 # undef cominterface
 # define cominterface struct
 
-# if defined(__GNUC__)
-#  if !defined(__stdcall)
-#   define __stdcall                   __attribute__((stdcall))
-#  endif
-# endif
-
 # undef COM_STDMETHODCALLTYPE
 # define COM_STDMETHODCALLTYPE         __stdcall
 
@@ -93,13 +87,22 @@
 # else /* __cplusplus && !COM_CINTERFACE */
 #  define FWD_DECLARE_INTERFACE(__intf) \
 	cominterface __intf;
-#  define DECLARE_INTERFACE(__intf) \
+#  if defined(__cplusplus)
+#   define DECLARE_INTERFACE(__intf) \
+	typedef cominterface __intf { \
+		const struct __intf##Vtbl *lpVtbl; \
+	} __intf; \
+	\
+	struct __intf##Vtbl
+#  else
+#   define DECLARE_INTERFACE(__intf) \
 	typedef cominterface __intf { \
 		const struct __intf##Vtbl *lpVtbl; \
 	} __intf; \
 	typedef const struct __intf##Vtbl __intf##Vtbl; \
 	\
 	struct __intf##Vtbl
+#  endif /* __cplusplus */
 #  define DECLARE_INTERFACE_(__intf, __parent) \
 	DECLARE_INTERFACE(__intf)
 #  define PURE                          /* */

@@ -1,0 +1,11 @@
+.deps
+.libs
+Makefile.in
+Makefile
+uuidgen
+*.la
+*.o
+*.lo
+*.so
+*.exe
+*.dll

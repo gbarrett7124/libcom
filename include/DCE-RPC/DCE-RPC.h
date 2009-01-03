@@ -43,6 +43,7 @@
 # define RPC_SYM_PREFIX                DCERPC_
 
 # include "DCE-RPC/uuid.h"
+# include "DCE-RPC/rpc.h"
 
 # undef RPC_SYM_PREFIX
 

@@ -77,17 +77,17 @@
 # define COM_SYM(__x)                  __x
 # define COM_COMPAT(__x)               com_##__x
 
-# include "com/types.h"
-# include "com/error.h"
-# include "com/interfaces.h"
+# include "COM/types.h"
+# include "COM/error.h"
+# include "COM/interfaces.h"
 
-# include "com/IUnknown.h"
-# include "com/ICoRegistry.h"
-# include "com/IClassFactory.h"
-# include "com/IMalloc.h"
+# include "COM/IUnknown.h"
+# include "COM/ICoRegistry.h"
+# include "COM/IClassFactory.h"
+# include "COM/IMalloc.h"
 
-# include "com/classes.h"
-# include "com/api.h"
-# include "com/compat.h"
+# include "COM/classes.h"
+# include "COM/api.h"
+# include "COM/compat.h"
 
 #endif /* !COM_COM_H_ */

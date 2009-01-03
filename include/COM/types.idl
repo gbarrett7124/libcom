@@ -52,7 +52,6 @@ interface COMTypes
 		byte data4[8];
 	} com_guid_t, com_iid_t, com_clsid_t;
 
-	typedef struct com_guid_struct com_guid_t;
 	typedef long com_result_t;
 
 	typedef boolean com_bool_t;

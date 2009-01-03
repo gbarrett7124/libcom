@@ -25,10 +25,10 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# BUILT_SOURCES =
+BUILT_SOURCES = types.h
 
 cominclude_HEADERS = COM.h \
-	types.h error.h interfaces.h classes.h \
+	error.h interfaces.h classes.h \
 	api.h compat.h \
 	IUnknown.h ICoRegistry.h IClassFactory.h IMalloc.h \
 	$(BUILT_SOURCES)

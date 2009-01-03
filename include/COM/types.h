@@ -53,6 +53,12 @@ typedef const com_iid_t *com_riid_t;
 typedef const com_clsid_t *com_rclsid_t;
 #endif
 
+/* A COM GUID is slightly different to a DCE one, although remains
+ * binary-compatible. data1 is time_low, data2 is time_mid, data3 is
+ * time_hi_and_version, data4[0] is clock_seq_hi_and_reserved,
+ * data4[1] is clock_seq_low, and the remaining six members of data4
+ * are node.
+ */
 struct com_guid_struct
 {
 	uint32_t data1;

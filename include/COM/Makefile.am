@@ -25,9 +25,13 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-comincdir = $(includedir)/com
+# BUILT_SOURCES =
 
-cominc_HEADERS = com.h \
+cominclude_HEADERS = COM.h \
 	types.h error.h interfaces.h classes.h \
 	api.h compat.h \
-	IUnknown.h ICoRegistry.h IClassFactory.h IMalloc.h
+	IUnknown.h ICoRegistry.h IClassFactory.h IMalloc.h \
+	$(BUILT_SOURCES)
+
+%.h: $(srcdir)/%.idl
+		$(COMIDL) -H$@ -nostdinc -I${srcdir}/../DCE-RPC -I${srcdir} $<

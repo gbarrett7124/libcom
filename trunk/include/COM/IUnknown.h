@@ -33,7 +33,7 @@
 #ifndef COM_IUNKNOWN_H_
 # define COM_IUNKNOWN_H_               1
 
-# include "com/com.h"
+# include "COM/COM.h"
 
 # undef INTERFACE
 # define INTERFACE                     IUnknown

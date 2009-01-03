@@ -4,7 +4,7 @@
  */
 
 /*
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008 Mo McRoberts.
+ * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Mo McRoberts.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "com/com.h"
+#include "COM/COM.h"
 
 #ifdef INITGUID
 # undef DEFINE_GUID

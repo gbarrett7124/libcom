@@ -33,9 +33,7 @@
 #ifndef COM_ICLASSFACTORY_H_
 # define COM_ICLASSFACTORY_H_          1
 
-# include "com/com.h"
-
-# include "com/IUnknown.h"
+# include "COM/COM.h"
 
 # undef INTERFACE
 # define INTERFACE                     IClassFactory

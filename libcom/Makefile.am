@@ -25,15 +25,20 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-CPPFLAGS += -DLIBCOM_INTERNAL=1 -I${top_srcdir}/include -I${top_builddir}/include @XPCOM_CPPFLAGS@
+CPPFLAGS += -DLIBCOM_INTERNAL=1 \
+	-I${top_srcdir}/include -I${top_builddir}/include \
+	@XPCOM_CPPFLAGS@ @CF_CPPFLAGS@
 
-lib_LTLIBRARIES = libcom.la
+comlib_LTLIBRARIES = libcom.la
 
 libcom_la_SOURCES = p_libcom.h p_win32.h \
 	global.c guid.c instance.c \
 	xpcom.cc \
 	regprovider.c \
-	registry.c registry_local.c registry_xpcom.cc \
+	dl.c \
+	registry.c registry_local.c registry_xpcom.cc registry_cfprefs.c \
 	taskmem_posix.c taskmem_xpcom.cc taskmem_win32.cc
 
-libcom_la_LDFLAGS = -avoid-version @XPCOM_LIBS@
+libcom_la_LIBADD = ../libdcerpc/libdcerpc.la
+
+libcom_la_LDFLAGS = -avoid-version @XPCOM_LIBS@ @CF_LIBS@

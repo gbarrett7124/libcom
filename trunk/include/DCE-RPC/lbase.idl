@@ -42,7 +42,7 @@ cpp_quote("/* @(#) $Id$ */");
 **
 */
 
-[local]
+[local,mode(rpc)]
 interface lbase
 {
 

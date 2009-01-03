@@ -29,6 +29,6 @@ CPPFLAGS += -I${top_srcdir}/include -I${top_builddir}/include
 
 bin_PROGRAMS = compreg
 
-compreg_SOURCES = compreg.c
+compreg_SOURCES = compreg.c ../getopt.c
 
 compreg_LDADD = ../libcom/libcom.la

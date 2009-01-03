@@ -121,6 +121,24 @@ if test x"${use_xpcom}" = x"auto" || test x"${use_xpcom}" = x"yes" ; then
 	fi
 fi
 
+AC_MSG_CHECKING([whether to use Core Foundation])
+AC_MSG_RESULT([${use_cf}])
+if test x"${use_cf}" = x"auto" || test x"${use_cf}" = x"yes" ; then
+	CF_LIBS="-framework CoreFoundation"
+	CF_CPPFLAGS="-framework CoreFoundation"
+	orig_ldflags="${LDFLAGS}"
+	LDFLAGS="${LDFLAGS} ${CF_LIBS}"
+	AC_CHECK_FUNC([CFPreferencesSetValue],[use_cf=yes],[
+	if test x"${use_cf}" = x"yes" ; then
+		AC_MSG_ERROR([--enable-cf was specified but cannot locate Core Foundation])
+	fi
+	use_cf="no"
+	CF_LIBS=''
+	CF_CPPFLAGS=''
+])
+	LDFLAGS="${orig_ldflags}"
+fi
+
 if test x"${use_xpcom}" = x"yes" ; then
 	AC_DEFINE_UNQUOTED([COM_USE_XPCOM], 1, [Define to use XPCOM bindings])
 else
@@ -150,36 +168,40 @@ fi
 AC_SUBST([XPCOM_LIBS])
 AC_SUBST([XPCOM_CPPFLAGS])
 
-AM_PROG_LEX
-AC_PROG_YACC
-AC_PROG_SED
-AC_PATH_PROG([GENCAT], [gencat], [true])
-AC_SUBST([GENCAT])
-AC_CHECK_FUNCS([catopen])
+AC_SUBST([CF_CPPFLAGS])
+AC_SUBST([CF_LIBS])
 
-IDL_CFLAGS='-D_GNU_SOURCE -D_REENTRANT -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_POSIX_C_SOURCE=3'
-IDL_CC="$CC"
-if test x"${ac_cv_prog_gcc}" = x"yes" ; then
-	IDL_CPP="$CPP -x c-header"
-else
-	IDL_CPP=""
-fi
+AC_CHECK_HEADERS(stdlib.h stdint.h unistd.h sys/sockio.h net/if.h netinet/in.h inttypes.h sys/ioctl.h sys/socket.h net/if_dl.h sys/syscalls.h )
+AC_CHECK_FUNCS(srandom jrand48)
+AC_CHECK_MEMBER(struct sockaddr.sa_len,
+AC_DEFINE_UNQUOTED(HAVE_SA_LEN,1,[Define if struct sockaddr contains sa_len]),,
+[#include <sys/types.h>
+#include <sys/socket.h>])
 
-AC_SUBST([IDL_CFLAGS])
-AC_SUBST([IDL_CC])
-AC_SUBST([IDL_CPP])
+AC_CONFIG_SUBDIRS([comidl])
+COMIDL='${top_builddir}/comidl/comidl'
+AC_SUBST(COMIDL)
+
+UUID_LIBS=''
+AC_CHECK_LIB(socket, socket, [UUID_LIB=-lsocket])
+AC_SUBST(UUID_LIBS)
+
+JL_BUNDLE_FRAMEWORK([com], [COM])
+JL_BUNDLE_FRAMEWORK([dcerpc], [DCE-RPC])
 
 AC_CONFIG_HEADER([config.h])
 
 AC_CONFIG_FILES([Makefile
 include/Makefile
-include/com/Makefile
+include/DCE-RPC/Makefile
+include/COM/Makefile
+libdcerpc/Makefile
+libdcerpc/uuid/Makefile
 libcom/Makefile
 libcom-inproc-support/Makefile
 compreg/Makefile
+uuidgen/Makefile
 tests/Makefile
-idl/Makefile
-idl/sysdep.h
 ])
 
 AC_OUTPUT
@@ -188,7 +210,7 @@ AC_MSG_RESULT([
 libcom configuration summary:
 	XPCOM bridge:            ${use_xpcom}
 	Win32 bridge:            ${use_win32}
-	CoreFoundation support:  ${use_cf}
+	Core Foundation support: ${use_cf}
 	POSIX threads:           ${use_pthread}
 	dlopen() support:        ${use_dl}
 ])

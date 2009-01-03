@@ -36,115 +36,104 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include "com/com.h"
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+#include "COM/COM.h"
 
 #ifndef EXIT_FAILURE
 # define EXIT_FAILURE                  1
 #endif
 
+#ifndef HAVE_GETOPT
+extern int opterr, optind, optopt, optreset;
+extern char *optarg;
+extern int getopt(int argc, char * const argv[], const char *options);
+#endif
+
+static const char *progname = "compreg";
+
 static void
-usage(const char *progname)
+usage(void)
 {
 	fprintf(stderr, 
 		"Usage:\n"
-		"  %s FILE             Register the classes in FILE\n"
-		"  %s -u[ ]FILE        Unregister the classes in FILE\n",
+		"  %s [OPTIONS] FILE        Register the classes in FILE\n"
+		"  %s [OPTIONS] -u[ ]FILE   Unregister the classes in FILE\n"
+		"OPTIONS is one or more of:\n"
+		"  -a APPID                 Register per-application classes for APPID\n"
+		"  -g                       Perform registrations globally (default is per-user)\n"
+		"  -v                       Display version information and exit\n"
+		"  -h                       Display this message and exit\n",
 		progname, progname);
+}
+
+static void
+version(void)
+{
+	fprintf(stderr, "@(#) $Id$\n");
 }
 
 int
 main(int argc, char **argv)
 {
-	const char *regfile, *arg;
-	int unreg, c, prev;
+	const char *regfile, *appid, *t;
+	int unreg, c;
 	com_result_t r;
 	com_rco_t rco;
-	uint32_t key;
-	
-	regfile = NULL;
-	arg = NULL;
-	prev = 0;
-	/* We don't use getopt so that we can be portable to braindead systems */
-	for(c = 1; c < argc; c++)
+
+	if(NULL != argv[0])
 	{
-		if(prev)
+		progname = argv[0];
+		if(NULL != (t = strrchr(progname, '/')))
 		{
-			if(argv[c][0] == '-')
-			{
-				fprintf(stderr, "%s: Option '-%c' requires an argument\n", argv[0], prev);
-				exit(EXIT_FAILURE);
-			}
+			t++;
+			progname = t;
 		}
-		else if(argv[c][0] == '-')
-		{
-			prev = argv[c][1];
-			arg = &(argv[c][2]);
-			if(prev == '-')
-			{
-				if(!argv[c][2])
-				{
-					break;
-				}
-				fprintf(stderr, "%s: Unrecognised long option '%s'\n", argv[0], argv[c]);
-				exit(EXIT_FAILURE);
-			}
-			if(!prev)
-			{
-				fprintf(stderr, "%s: Expected option character after '-'\n", argv[0]);
-				exit(EXIT_FAILURE);
-			}
-			if(!*arg)
-			{
-				arg = NULL;
-				continue;
-			}
-		}
-		else
-		{
-			if(regfile)
-			{
-				fprintf(stderr, "%s: Only one file may be specified\n", argv[0]);
-				exit(EXIT_FAILURE);
-			}
-			regfile = argv[c];
-		}
-		switch(prev)
+	}
+	argv[0] = (char *) progname;
+	appid = NULL;
+	regfile = NULL;
+	memset(&rco, 0, sizeof(rco));
+	rco.flags = COM_REG_PERSISTENT;
+	unreg = 0;
+	
+	while((c = getopt(argc, argv, "a:ugvh")) != -1)
+	{
+		switch(c)
 		{
 			case 'u':
 				unreg = 1;
-				if(regfile)
-				{
-					fprintf(stderr, "%s: Only one file may be specified\n", argv[0]);
-					exit(EXIT_FAILURE);
-				}
-				regfile = arg;
 				break;
+			case 'a':
+				appid = optarg;
+				break;
+			case 'g':
+				rco.flags |= COM_REG_ALLUSERS;
+				break;
+			case 'v':
+				version();
+				exit(EXIT_SUCCESS);
 			case 'h':
-				usage(argv[0]);
-				return 0;
+				usage();
+				exit(EXIT_SUCCESS);
 			default:
-				fprintf(stderr, "%s: Unrecognised option '-%c'\n", argv[0], prev);
+				usage();
 				exit(EXIT_FAILURE);
 		}
-		prev = 0;
-		arg = NULL;
 	}
-	if(prev)
+	argc -= optind;
+	argv += optind;
+	if(argc != 1)
 	{
-		fprintf(stderr, "%s: Option '-%c' requires an argument\n", argv[0], prev);
-	}
-	if(!regfile)
-	{
-		usage(argv[0]);
+		usage();
 		exit(EXIT_FAILURE);
 	}
-	com_init(NULL);
-	memset(&rco, 0, sizeof(rco));
+	regfile = argv[0];
+	com_init(appid);
 	rco.modulepath = regfile;
 	rco.ctx = COM_CTX_INPROC_SERVER|COM_CTX_INPROC_HANDLER;
-	rco.flags = COM_REG_PERSISTENT;
-	if(COM_S_OK != (r = com_register(&rco, &key)))
+	if(COM_S_OK != (r = com_register(&rco, NULL)))
 	{
 		fprintf(stderr, "%s: An error occurred while processing the component registration (0x%08x)\n", argv[0], r);
 		exit(EXIT_FAILURE);

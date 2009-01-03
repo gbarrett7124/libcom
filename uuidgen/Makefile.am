@@ -31,4 +31,4 @@ bin_PROGRAMS = uuidgen
 
 uuidgen_SOURCES = uuidgen.c ../getopt.c
 
-uuidgen_LDADD = ../libcom/libcom.la
+uuidgen_LDADD = ../libCOM/libCOM.la

@@ -4,7 +4,7 @@
  */
 
 /*
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008 Mo McRoberts.
+ * Copyright (c) 2009 Mo McRoberts.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,4 +34,20 @@
 # include "config.h"
 #endif
 
-#include "com/com.h"
+#include "p_rpc.h"
+
+void
+RPC_SYM(rpc__string_alloc)(size_t nbytes, unsigned_char_p_t *str, unsigned32 *status)
+{
+	*status = error_status_ok;
+	*str = (unsigned_char_p_t) calloc(1, nbytes);
+}
+
+void
+RPC_SYM(rpc_string_free)(/*[inout]*/ unsigned_char_p_t *string, /*[out]*/ unsigned32 *status)
+{
+	free(*string);
+	*string = NULL;
+	*status = error_status_ok;
+}
+

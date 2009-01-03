@@ -41,7 +41,6 @@
 #include <sys/types.h>
 
 #define RPC_export_uuid_v0_0_
-#include "../exports.h"
 #include "DCE-RPC/DCE-RPC.h"
 #include "../internal.h"
 

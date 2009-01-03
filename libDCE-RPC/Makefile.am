@@ -25,7 +25,7 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-SUBDIRS = uuid .
+SUBDIRS = uuid rpc .
 
 CPPFLAGS += -DLIBDCERPC_INTERNAL=1 \
 	-I${top_srcdir}/include -I${top_builddir}/include
@@ -34,6 +34,6 @@ dcerpclib_LTLIBRARIES = libDCE-RPC.la
 
 libDCE_RPC_la_SOURCES = stub.c exports.h internal.h
 
-libDCE_RPC_la_LIBADD = uuid/libuuid.la
+libDCE_RPC_la_LIBADD = uuid/libuuid.la rpc/librpc.la
 
 libDCE_RPC_la_LDFLAGS = -avoid-version

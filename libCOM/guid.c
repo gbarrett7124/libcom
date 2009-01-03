@@ -88,6 +88,6 @@ COM_SYM(com_guid_to_string)(const com_guid_t *guid, char *buf, size_t buflen, co
 		strncpy(buf, (const char *) p, buflen);
 	}
 	buf[buflen - 1] = 0;
-	rpc_string_free(p, &status);
+	rpc_string_free(&p, &status);
 	return COM_S_OK;
 }

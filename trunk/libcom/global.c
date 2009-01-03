@@ -96,8 +96,8 @@ com__tryinit(void)
 #ifdef COM_USE_XPCOM
 		com__registry_xpcom_init();
 #endif
-#ifdef COM_USE_CFPLUGIN
-		com__registry_cfplugin_init();
+#ifdef COM_USE_CF
+		com__registry_cfprefs_init();
 #endif
 	}
 }

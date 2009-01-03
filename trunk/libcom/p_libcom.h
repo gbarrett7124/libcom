@@ -40,21 +40,42 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# endif
 # ifdef HAVE_PTHREAD_H
 #  include <pthread.h>
 # endif
 # ifdef HAVE_DLFCN_H
 #  include <dlfcn.h>
 # endif
-# include "com/com.h"
+# if defined(COM_USE_CF)
+#  include <CoreFoundation/CoreFoundation.h>
+# endif
+# include "COM/COM.h"
 
 /* We need the local registry regardless of the others */
 # define COM_USE_LOCALREG              1
+
+typedef union
+{
+	com_guid_t guid;
+	uuid_t uuid;
+} guid_uuid_t;
+
 
 COM_EXTERNC void com__tryinit(void);
 
 ICoRegistry **com__reglist_get(size_t *count);
 void com__reglist_release(ICoRegistry **list, size_t count);
+
+com_result_t com__selfreg_path(const char *path, com_regflags_t flags);
+
+void *com__dlopen(const char *path);
+void *com__dlsym(void *h, const char *sym);
+void com__dlclose(void *h);
 
 # ifdef COM_USE_XPCOM 
 COM_EXTERNC com_result_t com__xpcom_init(void);
@@ -76,8 +97,8 @@ COM_EXTERNC com_result_t com__registry_win32_init(void);
 # ifdef COM_USE_XPCOM
 COM_EXTERNC com_result_t com__registry_xpcom_init(void);
 # endif
-# ifdef COM_USE_CFPLUGIN
-COM_EXTERNC com_result_t com__registry_cfplugin_init(void);
+# ifdef COM_USE_CF
+COM_EXTERNC com_result_t com__registry_cfprefs_init(void);
 # endif
 
 #endif /* !P_LIBCOM_H_ */

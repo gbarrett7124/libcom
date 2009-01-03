@@ -95,7 +95,7 @@ COM_SYM(com_register)(com_rco_t *rcox, uint32_t *key)
 	 */
 	if(NULL == rcox->clsid && NULL != rcox->modulepath)
 	{
-		return com__selfreg_path(rcox->modulepath);
+		return com__selfreg_path(rcox->modulepath, rcox->flags);
 	}
 	/* We now either have:
 	 * 1. A CLSID and a factory instance

@@ -36,58 +36,54 @@
 
 #include "p_libcom.h"
 
-#define INITGUID
-#include "com/guiddef.h"
-#include "com/IUnknown.h"
-#include "com/ICoRegistry.h"
-#include "com/IClassFactory.h"
-#include "com/IMalloc.h"
-
-const com_guid_t GUID_NULL = { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 }};
+#if !defined(RTLD_LOCAL)
+# define RTLD_LOCAL                    0
+#endif
 
 com_result_t
-COM_SYM(com_guid_generate)(com_guid_t *out, com_guidgen_t flags)
+com__selfreg_path(const char *path, com_regflags_t flags)
 {
-	unsigned32 status;
-	guid_uuid_t *u = (guid_uuid_t *) out;
-
-	(void) flags;
+	void *h;
+	com_self_register_t selfreg;
+	com_result_t r;
 	
-	uuid_create(&(u->uuid), &status);
-	return COM_S_OK;
+	if(NULL == (h = com__dlopen(path)))
+	{
+		return -1;
+	}
+	if(NULL == (selfreg = (com_self_register_t) com__dlsym(h, "com_self_register")))
+	{
+		fprintf(stderr, "com__selfreg_path: DLL does not export self-registration function\n");
+		com__dlclose(h);
+		return -1;
+	}
+	r = selfreg(path, flags);
+	com__dlclose(h);
+	return r;
 }
 
-com_result_t
-COM_SYM(com_guid_to_string)(const com_guid_t *guid, char *buf, size_t buflen, com_guidstr_t flags)
+void *
+com__dlopen(const char *path)
 {
-	char tmp[40];
-	unsigned char *p;
-	unsigned32 status;
-	guid_uuid_t *u = (guid_uuid_t *) guid;
-	
-/*	if(flags & COM_GUIDSTR_UPPERCASE)
-	{
-		com__uuid_unparse_upper(guid, &(tmp[1]));
-	}
-	else
-	{
-		com__uuid_unparse(guid, &(tmp[1]));
-	} */
-	uuid_to_string(&(u->uuid), &p, &status);
-		
-	if(flags & COM_GUIDSTR_BRACES)
-	{
-		tmp[0] = '{';
-		strcpy(&(tmp[1]), p);
-		tmp[37] = '}';
-		tmp[38] = 0;
-		strncpy(buf, tmp, buflen);
-	}
-	else
-	{
-		strncpy(buf, p, buflen);
-	}
-	buf[buflen - 1] = 0;
-	rpc_string_free(p);
-	return COM_S_OK;
+#if defined(COM_USE_DL)
+	return dlopen(path, RTLD_LOCAL|RTLD_NOW);
+#endif
+	return NULL;
+}
+
+void
+com__dlclose(void *handle)
+{
+#if defined(COM_USE_DL)
+	dlclose(handle);
+#endif
+}
+
+void *
+com__dlsym(void *handle, const char *symbol)
+{
+#if defined(COM_USE_DL)
+	return dlsym(handle, symbol);
+#endif
+	return NULL;
 }

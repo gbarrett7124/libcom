@@ -37,6 +37,8 @@
 # include <inttypes.h>
 # include <string.h>
 
+# include "DCE-RPC/DCE-RPC.h"
+
 # if defined(__GNUC__)
 #  if !defined(__stdcall)
 #   define __stdcall                   __attribute__((stdcall))

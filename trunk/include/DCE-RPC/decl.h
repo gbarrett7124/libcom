@@ -63,7 +63,7 @@
 #endif
 
 #if !defined(RPC_ASM_PREFIX)
-# if defined(_WIN32) || defined(__DARWIN__)
+# if defined(_WIN32) || defined(__APPLE__)
 #  define RPC_ASM_PREFIX               "_"
 # else
 #  define RPC_ASM_PREFIX               ""

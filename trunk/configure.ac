@@ -27,7 +27,7 @@ dnl NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 dnl SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 AC_INIT(libcom, 0.0)
-AC_CONFIG_SRCDIR([include/com/com.h])
+AC_CONFIG_SRCDIR([include/COM/COM.h])
 AM_INIT_AUTOMAKE([foreign])
 AM_MAINTAINER_MODE
 
@@ -195,10 +195,11 @@ AC_CONFIG_FILES([Makefile
 include/Makefile
 include/DCE-RPC/Makefile
 include/COM/Makefile
-libdcerpc/Makefile
-libdcerpc/uuid/Makefile
-libcom/Makefile
-libcom-inproc-support/Makefile
+libDCE-RPC/Makefile
+libDCE-RPC/uuid/Makefile
+libDCE-RPC/rpc/Makefile
+libCOM/Makefile
+libCOM-stubs/Makefile
 compreg/Makefile
 uuidgen/Makefile
 tests/Makefile

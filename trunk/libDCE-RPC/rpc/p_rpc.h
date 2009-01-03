@@ -4,7 +4,7 @@
  */
 
 /*
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008 Mo McRoberts.
+ * Copyright (c) 2009 Mo McRoberts.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,30 +30,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
+#ifndef P_RPC_H_
+# define P_RPC_H_                      1
 
-#include "p_libcom.h"
+# include <stdlib.h>
+# include <string.h>
 
-#ifdef COM_USE_XPCOM
+# define RPC_EXPORT_rpc_v0_0
+# include "DCE-RPC/DCE-RPC.h"
+# include "../internal.h"
 
-# include <nsXPCOM.h>
 
-com_result_t
-com__xpcom_init(void)
-{
-	NS_InitXPCOM2(NULL, NULL, NULL);
-	com__xpcom_registry_init();
-	com__xpcom_taskmem_init();
-	return COM_S_OK;
-}
+# include "../exports.h"
 
-com_result_t
-com__xpcom_shutdown(void)
-{
-	NS_ShutdownXPCOM(NULL);
-	return COM_S_OK;
-}
-
-#endif /* COM_USE_XPCOM */
+#endif /*!P_RPC_H_ */

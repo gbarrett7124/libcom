@@ -98,6 +98,6 @@ RPC_SYM(uuid_to_string)(/*[in]*/ uuid_p_t uuid, /*[out]*/ unsigned_char_p_t *uui
 	rpc__string_alloc(37, uuid_string, status);
 	if(error_status_ok == *status)
 	{
-		uuid_unparse(uuid, uuid_string, FMT_DEFAULT);
+		uuid_unparse(uuid, (char *) *uuid_string, FMT_DEFAULT);
 	}
 }

@@ -1,9 +1,0 @@
-.deps
-.libs
-Makefile.in
-Makefile
-test-1
-*.la
-*.o
-*.lo
-*.so

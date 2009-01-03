@@ -25,4 +25,4 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-SUBDIRS = comidl include libdcerpc libcom libcom-inproc-support compreg uuidgen tests
+SUBDIRS = comidl include libDCE-RPC libCOM libCOM-stubs compreg uuidgen tests

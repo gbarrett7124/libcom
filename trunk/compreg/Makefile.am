@@ -31,4 +31,4 @@ bin_PROGRAMS = compreg
 
 compreg_SOURCES = compreg.c ../getopt.c
 
-compreg_LDADD = ../libcom/libcom.la
+compreg_LDADD = ../libCOM/libCOM.la

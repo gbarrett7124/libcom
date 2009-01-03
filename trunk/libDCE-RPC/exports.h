@@ -1,7 +1,7 @@
 /* @(#) $Id$ */
 
 #define RPC_SYM_PREFIX                 DCERPC_
-
-#ifdef DCERPC_EXPORTS_
+#define RPC_EXPORTS
 #include "DCE-RPC/decl.h"
-#endif
+#undef RPC_EXPORTS
+#undef RPC_SYM_PREFIX

@@ -78,7 +78,7 @@ cpp_quote(" *");
 cpp_quote(" */");
 cpp_quote("");
 
-[pointer_default(unique)]
+[pointer_default(unique),mode(rpc)]
 interface nbase
 {
 	/* Type definitions for specific size integers */

@@ -78,7 +78,7 @@ cpp_quote(" *");
 cpp_quote(" */");
 cpp_quote("");
 
-[local]
+[local,mode(rpc)]
 interface uuid
 {
 	import  "lbase.idl";

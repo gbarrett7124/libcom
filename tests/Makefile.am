@@ -27,6 +27,8 @@
 
 CPPFLAGS += -I${top_srcdir}/include -I${top_builddir}/include
 
+noinst_LTLIBRARIES = test-3-server.la
+
 noinst_PROGRAMS = test-1 test-2
 
 test_1_SOURCES = test-1.c
@@ -34,3 +36,7 @@ test_1_LDADD = ../libcom/libcom.la
 
 test_2_SOURCES = test-2-server.c test-2-factory.c test-2.c test-2-guids.h ITester2.h Test2.h Test2Factory.h
 test_2_LDADD = ../libcom/libcom.la
+
+test_3_server_la_LDFLAGS = -module -avoid-version -export-dynamic -shared -rpath `pwd` -no-install
+test_3_server_la_SOURCES = test-3-server.c test-3-factory.c
+test_3_server_la_LIBADD = ../libcom-inproc-support/libcom-inproc-support.la

@@ -35,8 +35,3 @@
 #endif
 
 #include "com/com.h"
-
-extern com_result_t com_self_register(void);
-extern com_result_t com_self_unregister(void);
-extern com_result_t com_self_getclass(com_rclsid_t rclsid, com_riid_t riid, void **out);
-extern com_result_t com_self_lockcount(void);

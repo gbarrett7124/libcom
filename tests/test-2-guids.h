@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "com/guiddef.h"
+#include "COM/guiddef.h"
 
 /* 8daf2a4a-2d73-45cd-a4c9-41ead9bf836d */
 DEFINE_GUID(IID_ITester2, 0x8daf2a4a, 0x2d73, 0x45cd, 0xa4, 0xc9, 0x41, 0xea, 0xd9, 0xbf, 0x83, 0x6d);

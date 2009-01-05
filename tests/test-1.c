@@ -38,7 +38,7 @@
 #include <stdlib.h>
 
 #define COM_COMPAT_MSCOM
-#include "com/com.h"
+#include "COM/COM.h"
 
 int
 main(int argc, char **argv)

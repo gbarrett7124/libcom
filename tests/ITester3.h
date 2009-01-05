@@ -33,8 +33,6 @@
 #ifndef ITESTER3_H_
 # define ITESTER3_H_                   1
 
-# include "com/com.h"
-
 # undef INTERFACE
 # define INTERFACE                     ITester2
 

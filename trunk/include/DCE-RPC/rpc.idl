@@ -28,7 +28,7 @@ cpp_quote(" * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.");
 cpp_quote(" */");
 cpp_quote("");
 
-[local,mode(rpc)]
+[local]
 interface rpc
 {
 	import  "lbase.idl";

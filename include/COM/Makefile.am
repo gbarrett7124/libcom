@@ -34,4 +34,4 @@ cominclude_HEADERS = COM.h \
 	$(BUILT_SOURCES)
 
 %.h: $(srcdir)/%.idl
-		$(COMIDL) -H$@ -nostdinc -I${srcdir}/../DCE-RPC -I${srcdir}/.. -I${srcdir} $<
+		$(COMIDL) -M com -H$@ -nostdinc -I${srcdir}/../DCE-RPC -I${srcdir}/.. -I${srcdir} $<

@@ -1,27 +1,83 @@
 cpp_quote("/* @(#) $Id$ */");
+cpp_quote("");
+cpp_quote("/*");
+cpp_quote(" * Copyright (c) 2008, 2009 Mo McRoberts.");
+cpp_quote(" *");
+cpp_quote(" * Redistribution and use in source and binary forms, with or without");
+cpp_quote(" * modification, are permitted provided that the following conditions");
+cpp_quote(" * are met:");
+cpp_quote(" * 1. Redistributions of source code must retain the above copyright");
+cpp_quote(" *    notice, this list of conditions and the following disclaimer.");
+cpp_quote(" * 2. Redistributions in binary form must reproduce the above copyright");
+cpp_quote(" *    notice, this list of conditions and the following disclaimer in the");
+cpp_quote(" *    documentation and/or other materials provided with the distribution.");
+cpp_quote(" * 3. The names of the author(s) of this software may not be used to endorse");
+cpp_quote(" *    or promote products derived from this software without specific prior");
+cpp_quote(" *    written permission.");
+cpp_quote(" *");
+cpp_quote(" * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,");
+cpp_quote(" * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY");
+cpp_quote(" * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL");
+cpp_quote(" * AUTHORS OF THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,");
+cpp_quote(" * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED");
+cpp_quote(" * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR");
+cpp_quote(" * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF");
+cpp_quote(" * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING");
+cpp_quote(" * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS");
+cpp_quote(" * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.");
+cpp_quote(" */");
+cpp_quote("");
+cpp_quote("/*");
+cpp_quote(" * Copyright (c) 2007, Novell, Inc.");
+cpp_quote(" * All rights reserved.");
+cpp_quote(" * ");
+cpp_quote(" * Redistribution and use in source and binary forms, with or without");
+cpp_quote(" * modification, are permitted provided that the following conditions");
+cpp_quote(" * are met:");
+cpp_quote(" * 1. Redistributions of source code must retain the above copyright");
+cpp_quote(" *    notice, this list of conditions and the following disclaimer.");
+cpp_quote(" * 2. Redistributions in binary form must reproduce the above copyright");
+cpp_quote(" *    notice, this list of conditions and the following disclaimer in the");
+cpp_quote(" *    documentation and/or other materials provided with the distribution.");
+cpp_quote(" * 3. Neither the name of the Novell, Inc. nor the names of its contributors");
+cpp_quote(" *    may be used to endorse or promote products derived from this software");
+cpp_quote(" *    without specific prior written permission.");
+cpp_quote(" *");
+cpp_quote(" * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS");
+cpp_quote(" * \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT");
+cpp_quote(" * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR");
+cpp_quote(" * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT");
+cpp_quote(" * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,");
+cpp_quote(" * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT");
+cpp_quote(" * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,");
+cpp_quote(" * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY");
+cpp_quote(" * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT");
+cpp_quote(" * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE");
+cpp_quote(" * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.");
+cpp_quote(" */");
+cpp_quote("");
+cpp_quote("/*");
+cpp_quote(" *");
+cpp_quote(" * (c) Copyright 1989 OPEN SOFTWARE FOUNDATION, INC.");
+cpp_quote(" * (c) Copyright 1989 HEWLETT-PACKARD COMPANY");
+cpp_quote(" * (c) Copyright 1989 DIGITAL EQUIPMENT CORPORATION");
+cpp_quote(" * To anyone who acknowledges that this file is provided \"AS IS\"");
+cpp_quote(" * without any express or implied warranty:");
+cpp_quote(" *                 permission to use, copy, modify, and distribute this");
+cpp_quote(" * file for any purpose is hereby granted without fee, provided that");
+cpp_quote(" * the above copyright notices and this notice appears in all source");
+cpp_quote(" * code copies, and that none of the names of Open Software");
+cpp_quote(" * Foundation, Inc., Hewlett-Packard Company, or Digital Equipment");
+cpp_quote(" * Corporation be used in advertising or publicity pertaining to");
+cpp_quote(" * distribution of the software without specific, written prior");
+cpp_quote(" * permission.  Neither Open Software Foundation, Inc., Hewlett-");
+cpp_quote(" * Packard Company, nor Digital Equipment Corporation makes any");
+cpp_quote(" * representations about the suitability of this software for any");
+cpp_quote(" * purpose.");
+cpp_quote(" *");
+cpp_quote(" */");
+cpp_quote("");
 
-/*
- * 
- * (c) Copyright 1989 OPEN SOFTWARE FOUNDATION, INC.
- * (c) Copyright 1989 HEWLETT-PACKARD COMPANY
- * (c) Copyright 1989 DIGITAL EQUIPMENT CORPORATION
- * To anyone who acknowledges that this file is provided "AS IS"
- * without any express or implied warranty:
- *                 permission to use, copy, modify, and distribute this
- * file for any purpose is hereby granted without fee, provided that
- * the above copyright notices and this notice appears in all source
- * code copies, and that none of the names of Open Software
- * Foundation, Inc., Hewlett-Packard Company, or Digital Equipment
- * Corporation be used in advertising or publicity pertaining to
- * distribution of the software without specific, written prior
- * permission.  Neither Open Software Foundation, Inc., Hewlett-
- * Packard Company, nor Digital Equipment Corporation makes any
- * representations about the suitability of this software for any
- * purpose.
- * 
- */
-/*
- */
 /*
 **
 **  NAME:
@@ -42,7 +98,7 @@ cpp_quote("/* @(#) $Id$ */");
 **
 */
 
-[local,mode(rpc)]
+[local]
 interface lbase
 {
 
@@ -71,5 +127,4 @@ interface lbase
 	} sockaddr_t, *sockaddr_p_t;
 
 	cpp_quote("# endif /* 0 */");
-
 }

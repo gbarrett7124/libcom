@@ -1,2 +1,10 @@
 Makefile
 Makefile.in
+types.h
+IUnknown.h
+IClassFactory.h
+IMalloc.h
+ICoRegistry.h
+api.h
+compat.h
+

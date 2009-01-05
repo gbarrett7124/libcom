@@ -25,7 +25,7 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-BUILT_SOURCES = types.h
+BUILT_SOURCES = types.h IUnknown.h
 
 cominclude_HEADERS = COM.h \
 	error.h interfaces.h classes.h \
@@ -34,4 +34,4 @@ cominclude_HEADERS = COM.h \
 	$(BUILT_SOURCES)
 
 %.h: $(srcdir)/%.idl
-		$(COMIDL) -H$@ -nostdinc -I${srcdir}/../DCE-RPC -I${srcdir} $<
+		$(COMIDL) -H$@ -nostdinc -I${srcdir}/../DCE-RPC -I${srcdir}/.. -I${srcdir} $<

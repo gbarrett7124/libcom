@@ -29,14 +29,16 @@ cpp_quote(" */");
 cpp_quote("");
 
 import "COM/IUnknown.idl";
-
 [
+	local,
 	object,
-	uuid(00000001-0000-0000-C000-000000000046),
+	uuid(5AFCD459-00FE-47B9-B3D6-F7DEA5D890AC),
 	pointer_default(unique)
 ]
-interface IClassFactory: IUnknown
+interface ICoRegistry: IUnknown
 {
-	com_result_t CreateInstance([in] IUnknown *outer, [in] com_riid_t iid, [out, iid_is(riid)] void **object);
-	com_result_t LockServer([in] com_bool_t lock);
+	com_result_t RegisterClass([in] com_rco_t *rco, [out] uint32_t *key);
+	com_result_t UnregisterClassKey([in] uint32_t key);
+	com_result_t UnregisterClassID([in] com_rclsid_t rclsid);
+	com_result_t GetClassObject([in] com_rclsid_t clsid, [in] com_context_t context, [in] com_server_t *server, [in] com_riid_t riid, [out,iid_is(riid)] void **object);
 }

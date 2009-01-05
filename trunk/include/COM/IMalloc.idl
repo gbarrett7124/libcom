@@ -31,12 +31,17 @@ cpp_quote("");
 import "COM/IUnknown.idl";
 
 [
+	local,
 	object,
-	uuid(00000001-0000-0000-C000-000000000046),
+	uuid(00000002-0000-0000-C000-000000000046),
 	pointer_default(unique)
 ]
-interface IClassFactory: IUnknown
+interface IMalloc: IUnknown
 {
-	com_result_t CreateInstance([in] IUnknown *outer, [in] com_riid_t iid, [out, iid_is(riid)] void **object);
-	com_result_t LockServer([in] com_bool_t lock);
+	void *Alloc([in] com_size_t cb);
+	void *Realloc([in] void *mem, [in] com_size_t cb);
+	void Free([in] void *mem);
+	com_size_t GetSize([in] void *mem);
+	int DidAlloc([in] void *mem);
+	void HeapMinimize(void);
 }

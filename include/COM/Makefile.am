@@ -25,13 +25,13 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-BUILT_SOURCES = types.h IUnknown.h IClassFactory.h
+BUILT_SOURCES = types.h IUnknown.h IClassFactory.h ICoRegistry.h IMalloc.h
 
 cominclude_HEADERS = COM.h \
 	error.h interfaces.h classes.h \
 	api.h compat.h \
-	ICoRegistry.h IMalloc.h \
-	$(BUILT_SOURCES)
+	$(BUILT_SOURCES) \
+	types.idl IUnknown.idl IClassFactory.idl ICoRegistry.idl IMalloc.idl
 
 %.h: $(srcdir)/%.idl
 		$(COMIDL) -M com -H$@ -nostdinc -I${srcdir}/../DCE-RPC -I${srcdir}/.. -I${srcdir} $<

@@ -33,7 +33,7 @@
 #ifndef TEST2FACTORY_H_
 # define TEST2FACTORY_H_               1
 
-# include "com/com.h"
+# include "COM/COM.h"
 
 DECLARE_GENERIC_FACTORY(Test2Factory);
 

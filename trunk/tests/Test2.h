@@ -33,7 +33,7 @@
 #ifndef TEST2_H_
 # define TEST2_H_                      1
 
-# include "com/com.h"
+# include "COM/COM.h"
 
 # include "ITester2.h"
 

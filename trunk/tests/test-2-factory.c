@@ -37,7 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "com/com.h"
+#include "COM/COM.h"
 #include "ITester2.h"
 #include "Test2.h"
 #include "Test2Factory.h"

@@ -44,6 +44,6 @@ DECLARE_CLASS(Test2)
 	int foo;
 };
 
-COM_EXTERNC com_result_t new_Test2(IUnknown *outer, com_rclsid_t riid, void **out, int defval);
+RPC_EXTERNC com_result_t new_Test2(IUnknown *outer, com_rclsid_t riid, void **out, int defval);
 
 #endif /* !TEST2_H_ */

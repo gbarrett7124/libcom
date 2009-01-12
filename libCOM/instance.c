@@ -37,7 +37,7 @@
 #include "p_libcom.h"
 
 com_result_t
-COM_SYM(com_register_factory)(com_rclsid_t clsid, com_context_t context, const char *contractid, IUnknown *factory, uint32_t *key)
+RPC_SYM(com_register_factory)(com_rclsid_t clsid, com_context_t context, const char *contractid, IUnknown *factory, uint32_t *key)
 {
 	com_rco_t rcox;
 
@@ -50,7 +50,7 @@ COM_SYM(com_register_factory)(com_rclsid_t clsid, com_context_t context, const c
 }
 
 com_result_t
-COM_COMPAT(CoRegisterClassObject)(com_rclsid_t clsid, IUnknown *factory, com_context_t context, com_regflags_t flags, uint32_t *key)
+RPC_SYM(CoRegisterClassObject)(com_rclsid_t clsid, IUnknown *factory, com_context_t context, com_regflags_t flags, uint32_t *key)
 {
 	com_rco_t rcox;
 	
@@ -63,19 +63,19 @@ COM_COMPAT(CoRegisterClassObject)(com_rclsid_t clsid, IUnknown *factory, com_con
 }
 
 com_result_t
-COM_COMPAT(CoRevokeClassObject)(uint32_t key)
+RPC_SYM(CoRevokeClassObject)(uint32_t key)
 {
 	return com_unregister(key);
 }
 
 com_result_t
-COM_COMPAT(CoGetClassObject)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out)
+RPC_SYM(CoGetClassObject)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out)
 {
 	return com_getclass(clsid, context, server, riid, out);
 }
 
 com_result_t
-COM_COMPAT(CoCreateInstanceEx)(com_rclsid_t clsid, IUnknown *outer, com_context_t context, com_server_t *server, size_t intfcount, com_multiqi_t *intf)
+RPC_SYM(CoCreateInstanceEx)(com_rclsid_t clsid, IUnknown *outer, com_context_t context, com_server_t *server, size_t intfcount, com_multiqi_t *intf)
 {
 	IClassFactory *cf;
 	IUnknown *inst;
@@ -116,7 +116,7 @@ COM_COMPAT(CoCreateInstanceEx)(com_rclsid_t clsid, IUnknown *outer, com_context_
 }
 
 com_result_t
-COM_COMPAT(CoCreateInstance)(com_rclsid_t clsid, IUnknown *outer, unsigned context, com_riid_t riid, void **out)
+RPC_SYM(CoCreateInstance)(com_rclsid_t clsid, IUnknown *outer, unsigned context, com_riid_t riid, void **out)
 {
 	IClassFactory *cf;
 	com_result_t r;

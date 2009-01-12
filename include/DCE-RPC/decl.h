@@ -49,17 +49,19 @@
 # define RPC__STRING(__x)               RPC__TOSTRING(__x)
 # define RPC__STRING2(__x, __y)         RPC__TOSTRING(__x) RPC__TOSTRING(__y)
 # define RPC__STRING3(__x, __y, __z)    RPC__TOSTRING(__x) RPC__TOSTRING(__y) RPC__TOSTRING(__z)
+# define RPC__ISTR3(__x, __s1, __y, __s2, __z) RPC__TOSTRING(__x) __s1 RPC__TOSTRING(__y) __s2 RPC__TOSTRING(__z)
+# define RPC__ISTR2(__x, __s, __y)      RPC__TOSTRING(__x) __s RPC__TOSTRING(__y)
 #endif
 
 #if defined(RPC_SYM_PREFIX) && defined(RPC_SYM_SUFFIX)
-# define RPC_LOCAL_SYM(__x)            RPC_SYM_PREFIX##__x##RPC_SYM_SUFFIX
-# define RPC_LOCAL_SYMSTR(__x)         RPC__STRING3(RPC_SYM_PREFIX, __x, RPC_SYM_SUFFIX)
+# define RPC_LOCAL_SYM(__x)            RPC_SYM_PREFIX##_##__x##_##RPC_SYM_SUFFIX
+# define RPC_LOCAL_SYMSTR(__x)         RPC__ISTR3(RPC_SYM_PREFIX, "$", __x, "$", RPC_SYM_SUFFIX)
 #elif defined(RPC_SYM_PREFIX)
-# define RPC_LOCAL_SYM(__x)            RPC_SYM_PREFIX##__x
-# define RPC_LOCAL_SYMSTR(__x)         RPC__STRING2(RPC_SYM_PREFIX, __x)
+# define RPC_LOCAL_SYM(__x)            RPC_SYM_PREFIX##_##__x
+# define RPC_LOCAL_SYMSTR(__x)         RPC__ISTR2(RPC_SYM_PREFIX, "$", __x)
 #elif defined(RPC_SYM_SUFFIX)
-# define RPC_LOCAL_SYM(__x)            __x##RPC_SYM_SUFFIX
-# define RPC_LOCAL_SYMSTR(__x)         RPC__STRING2(__x, RPC_SYM_SUFFIX)
+# define RPC_LOCAL_SYM(__x)            __x##_##RPC_SYM_SUFFIX
+# define RPC_LOCAL_SYMSTR(__x)         RPC__ISTR2(__x, "$", RPC_SYM_SUFFIX)
 #endif
 
 #if !defined(RPC_ASM_PREFIX)

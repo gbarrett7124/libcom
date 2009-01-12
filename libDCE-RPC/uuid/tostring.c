@@ -70,6 +70,8 @@
 
 #include "uuidP.h"
 
+#define UUID_STRLEN                    36
+
 static const char *fmt_lower = 
 	"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x";
 
@@ -95,7 +97,7 @@ uuid_unparse(const uuid_t *uuid, char *out, const char *fmt)
 void
 RPC_SYM(uuid_to_string)(/*[in]*/ uuid_p_t uuid, /*[out]*/ unsigned_char_p_t *uuid_string, /*[out]*/ unsigned32 *status)
 {
-	rpc__string_alloc(37, uuid_string, status);
+	rpc__string_alloc(UUID_STRLEN, uuid_string, status);
 	if(error_status_ok == *status)
 	{
 		uuid_unparse(uuid, (char *) *uuid_string, FMT_DEFAULT);

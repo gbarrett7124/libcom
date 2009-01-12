@@ -86,7 +86,7 @@ com__xpcom_taskmem_init(void)
 }
 
 IMalloc *
-COM_SYM(com_allocator)(void)
+RPC_SYM(com_allocator)(void)
 {
 	INITIALISE_ADDREF_INTERFACE_POINTER(CoMallocXPCOM, &com_taskmem, IMalloc);
 	
@@ -94,7 +94,7 @@ COM_SYM(com_allocator)(void)
 }
 
 com_result_t
-COM_COMPAT(CoGetMalloc)(uint32_t context, IMalloc **out)
+RPC_SYM(CoGetMalloc)(uint32_t context, IMalloc **out)
 {
 	if(1 != context)
 	{
@@ -107,19 +107,19 @@ COM_COMPAT(CoGetMalloc)(uint32_t context, IMalloc **out)
 }
 
 void *
-COM_COMPAT(CoTaskMemAlloc)(uint32_t size)
+RPC_SYM(CoTaskMemAlloc)(uint32_t size)
 {
 	return NS_Alloc(size);
 }
 
 void
-COM_COMPAT(CoTaskMemFree)(void *ptr)
+RPC_SYM(CoTaskMemFree)(void *ptr)
 {
 	return NS_Free(ptr);
 }
 
 void *
-COM_COMPAT(CoTaskMemRealloc)(void *ptr, uint32_t newsize)
+RPC_SYM(CoTaskMemRealloc)(void *ptr, uint32_t newsize)
 {
 	return NS_Realloc(ptr, newsize);
 }

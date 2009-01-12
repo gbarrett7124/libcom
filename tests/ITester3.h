@@ -34,9 +34,9 @@
 # define ITESTER3_H_                   1
 
 # undef INTERFACE
-# define INTERFACE                     ITester2
+# define INTERFACE                     ITester3
 
-DECLARE_INTERFACE_(ITester2, IUnknown)
+DECLARE_INTERFACE_(ITester3, IUnknown)
 {
 	BEGIN_INTERFACE
 	

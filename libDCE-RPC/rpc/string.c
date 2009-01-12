@@ -39,8 +39,10 @@
 void
 RPC_SYM(rpc__string_alloc)(size_t nbytes, unsigned_char_p_t *str, unsigned32 *status)
 {
-	*status = error_status_ok;
-	*str = (unsigned_char_p_t) calloc(1, nbytes);
+	if(NULL != (*str = (unsigned_char_p_t) calloc(1, nbytes + 1)))
+	{
+		*status = error_status_ok;
+	}
 }
 
 void

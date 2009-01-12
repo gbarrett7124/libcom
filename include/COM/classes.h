@@ -58,7 +58,7 @@
 	{ \
 		DECLARE_IMPLEMENTS(__classname, IClassFactory) \
 	}; \
-	COM_EXTERNC IUnknown *get##__classname(void);
+	RPC_EXTERNC IUnknown *get##__classname(void);
 
 # define SELF(__classname, __intf, __intfptr)  \
 	(((union __classname##__##__intf##_union *) (__intfptr))->c.self)
@@ -99,7 +99,7 @@
 	(&((__instance)->__intf##_.u))
 
 # define DEFINE_GENERIC_FACTORY(__classname, constructor) \
-	static com_result_t COM_STDMETHODCALLTYPE __classname##_IClassFactory_QueryInterface(IClassFactory *intf, com_riid_t riid, void **out) \
+	static com_result_t __stdcall __classname##_IClassFactory_QueryInterface(IClassFactory *intf, com_riid_t riid, void **out) \
 	{ \
 		if(com_guid_equal(riid, &IID_IUnknown) || com_guid_equal(riid, &IID_IClassFactory)) \
 		{ \
@@ -110,28 +110,28 @@
 		return COM_E_NOINTERFACE; \
 	} \
 	\
-	static uint32_t COM_STDMETHODCALLTYPE __classname##_IClassFactory_AddRef(IClassFactory *intf) \
+	static uint32_t __stdcall __classname##_IClassFactory_AddRef(IClassFactory *intf) \
 	{ \
 		(void) intf; \
 		\
 		return 2; \
 	} \
 	\
-	static uint32_t COM_STDMETHODCALLTYPE __classname##_IClassFactory_Release(IClassFactory *intf) \
+	static uint32_t __stdcall __classname##_IClassFactory_Release(IClassFactory *intf) \
 	{ \
 		(void) intf; \
 		\
 		return 1; \
 	} \
 	\
-	static com_result_t COM_STDMETHODCALLTYPE __classname##_IClassFactory_CreateInstance(IClassFactory *intf, IUnknown *outer, com_riid_t riid, void **out) \
+	static com_result_t __stdcall __classname##_IClassFactory_CreateInstance(IClassFactory *intf, IUnknown *outer, com_riid_t riid, void **out) \
 	{ \
 		(void) intf; \
 		constructor; \
 		return COM_E_NOINTERFACE; \
 	} \
 	\
-	static com_result_t COM_STDMETHODCALLTYPE __classname##_IClassFactory_LockServer(IClassFactory *intf, com_bool_t lock) \
+	static com_result_t __stdcall __classname##_IClassFactory_LockServer(IClassFactory *intf, com_bool_t lock) \
 	{ \
 		(void) intf; \
 		(void) lock; \

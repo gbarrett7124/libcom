@@ -54,10 +54,15 @@
 # if defined(COM_USE_CF)
 #  include <CoreFoundation/CoreFoundation.h>
 # endif
+
+# define RPC_EXPORT_CoAPI_v0_0
+# define RPC_EXPORT_CoCompat_v0_0
 # include "COM/COM.h"
 
 /* We need the local registry regardless of the others */
 # define COM_USE_LOCALREG              1
+
+typedef com_result_t (__stdcall *com_self_register_t)(const char *pathname, com_regflags_t flags);
 
 typedef union
 {
@@ -66,39 +71,45 @@ typedef union
 } guid_uuid_t;
 
 
-COM_EXTERNC void com__tryinit(void);
+# define RPC_EXPORTS
+# define RPC_SYMPREFIX                 COM
+# include "DCE-RPC/decl.h"
+# undef RPC_SYMPREFIX
+# undef RPC_EXPORTS
 
-ICoRegistry **com__reglist_get(size_t *count);
-void com__reglist_release(ICoRegistry **list, size_t count);
+RPC_EXTERNC void com__tryinit(void);
 
-com_result_t com__selfreg_path(const char *path, com_regflags_t flags);
+RPC_EXTERNC ICoRegistry **com__reglist_get(size_t *count);
+RPC_EXTERNC void com__reglist_release(ICoRegistry **list, size_t count);
 
-void *com__dlopen(const char *path);
-void *com__dlsym(void *h, const char *sym);
-void com__dlclose(void *h);
+RPC_EXTERNC com_result_t com__selfreg_path(const char *path, com_regflags_t flags);
+
+RPC_EXTERNC void *com__dlopen(const char *path);
+RPC_EXTERNC void *com__dlsym(void *h, const char *sym);
+RPC_EXTERNC void com__dlclose(void *h);
 
 # ifdef COM_USE_XPCOM 
-COM_EXTERNC com_result_t com__xpcom_init(void);
-COM_EXTERNC int com__xpcom_registry_init(void);
-COM_EXTERNC int com__xpcom_taskmem_init(void);
-COM_EXTERNC com_result_t com__xpcom_shutdown(void);
-COM_EXTERNC com_result_t com__xpcom_register(com_rco_t *rcox);
-COM_EXTERNC com_result_t com__xpcom_unregister(com_rclsid_t clsid, IClassFactory *factory);
-COM_EXTERNC com_result_t com__xpcom_getclass(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
+RPC_EXTERNC com_result_t com__xpcom_init(void);
+RPC_EXTERNC int com__xpcom_registry_init(void);
+RPC_EXTERNC int com__xpcom_taskmem_init(void);
+RPC_EXTERNC com_result_t com__xpcom_shutdown(void);
+RPC_EXTERNC com_result_t com__xpcom_register(com_rco_t *rcox);
+RPC_EXTERNC com_result_t com__xpcom_unregister(com_rclsid_t clsid, IClassFactory *factory);
+RPC_EXTERNC com_result_t com__xpcom_getclass(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
 # endif
 
 /* Registry providers */
 # ifdef COM_USE_LOCALREG
-COM_EXTERNC com_result_t com__registry_local_init(void);
+RPC_EXTERNC com_result_t com__registry_local_init(void);
 # endif
 # ifdef COM_USE_WIN32
-COM_EXTERNC com_result_t com__registry_win32_init(void);
+RPC_EXTERNC com_result_t com__registry_win32_init(void);
 # endif
 # ifdef COM_USE_XPCOM
-COM_EXTERNC com_result_t com__registry_xpcom_init(void);
+RPC_EXTERNC com_result_t com__registry_xpcom_init(void);
 # endif
 # ifdef COM_USE_CF
-COM_EXTERNC com_result_t com__registry_cfprefs_init(void);
+RPC_EXTERNC com_result_t com__registry_cfprefs_init(void);
 # endif
 
 #endif /* !P_LIBCOM_H_ */

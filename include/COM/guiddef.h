@@ -35,5 +35,5 @@
 #ifdef INITGUID
 # undef DEFINE_GUID
 # define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
-	COM_DECLAREC const com_guid_t name = { l, w1, w2, { b1, b2, b3, b4, b5, b6, b7, b8 }}
+	RPC_DECLAREC const com_guid_t name = { l, w1, w2, { b1, b2, b3, b4, b5, b6, b7, b8 }}
 #endif

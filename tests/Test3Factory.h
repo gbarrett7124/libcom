@@ -35,6 +35,6 @@
 
 # include "COM/COM.h"
 
-DECLARE_GENERIC_FACTORY(Test2Factory);
+DECLARE_GENERIC_FACTORY(Test3Factory);
 
 #endif /* !TEST3FACTORY_H_ */

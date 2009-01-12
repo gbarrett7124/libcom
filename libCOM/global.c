@@ -126,7 +126,7 @@ com__tryinit(void)
  */
  
 com_result_t
-COM_SYM(com_init)(const char *identifier)
+RPC_SYM(com_init)(const char *identifier)
 {
 	com__tryinit();
 	return COM_S_OK;
@@ -146,7 +146,7 @@ COM_SYM(com_init)(const char *identifier)
  */
 
 com_result_t
-COM_SYM(com_shutdown)(void)
+RPC_SYM(com_shutdown)(void)
 {
 	return COM_S_OK;
 }
@@ -163,7 +163,7 @@ COM_SYM(com_shutdown)(void)
  */
 
 com_result_t
-COM_COMPAT(CoInitialize)(void *reserved)
+RPC_SYM(CoInitialize)(void *reserved)
 {
 	(void) reserved;
 	
@@ -189,7 +189,7 @@ COM_COMPAT(CoInitialize)(void *reserved)
  */
 
 com_result_t
-COM_COMPAT(CoInitializeEx)(void *reserved, uint32_t flags)
+RPC_SYM(CoInitializeEx)(void *reserved, uint32_t flags)
 {
 	(void) reserved;
 	(void) flags;

@@ -39,43 +39,7 @@
 
 # include "DCE-RPC/DCE-RPC.h"
 
-# if defined(__GNUC__)
-#  if !defined(__stdcall)
-#   define __stdcall                   __attribute__((stdcall))
-#  endif
-# endif
-
-# if defined(_WIN32)
-#  if defined(__GNUC__)
-#   define COM_EXPORTED                __attribute__((dllexport))
-#   define COM_IMPORTED                __attribute__((dllimport))
-#  else
-#   define COM_EXPORTED                __declspec(dllexport)
-#   define COM_IMPORTED                __declspec(dllimport)
-#  endif
-# else
-#  define COM_EXPORTED                 __attribute__((visibility("default")))
-#  define COM_IMPORTED                 /* */
-# endif
-
-# if defined(__cplusplus)
-#  define COM_EXTERNC                  extern "C"
-#  define COM_DECLAREC                 extern "C"
-# else
-#  define COM_EXTERNC                  extern
-#  define COM_DECLAREC                 /* */
-# endif
-
-# ifdef LIBCOM_INTERNAL
-#  define COM_EXPORT                    COM_EXPORTED
-# else
-#  define COM_EXPORT                    COM_IMPORTED
-# endif
-
-# define COM_CEXPORT                    COM_EXTERNC COM_EXPORT
-
-# define COM_SYM(__x)                  __x
-# define COM_COMPAT(__x)               com_##__x
+# define RPC_SYM_PREFIX                COM
 
 # include "COM/types.h"
 # include "COM/error.h"
@@ -89,5 +53,12 @@
 # include "COM/classes.h"
 # include "COM/api.h"
 # include "COM/compat.h"
+
+RPC_EXTERNC const com_guid_t RPC_SYM(GUID_NULL) RPC_ALIAS(GUID_NULL);
+
+RPC_EXTERNC com_result_t __stdcall com_self_register(const char *pathname, com_regflags_t flags);
+RPC_EXTERNC com_result_t __stdcall com_self_unregister(void);
+RPC_EXTERNC com_result_t __stdcall com_self_getclass(com_rclsid_t rclsid, com_riid_t riid, void **out);
+RPC_EXTERNC com_result_t __stdcall com_self_lockcount(void);
 
 #endif /* !COM_COM_H_ */

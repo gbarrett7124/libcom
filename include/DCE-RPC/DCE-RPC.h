@@ -40,7 +40,7 @@
 # include "DCE-RPC/nbase.h"
 # include "DCE-RPC/lbase.h"
 
-# define RPC_SYM_PREFIX                DCERPC_
+# define RPC_SYM_PREFIX                DCERPC
 
 # include "DCE-RPC/uuid.h"
 # include "DCE-RPC/rpc.h"

@@ -62,7 +62,7 @@ static com_result_t com__reglist_add(ICoRegistry *registry);
  * Add an ICoRegistry implementation to the list of available providers.
  */
 com_result_t
-COM_SYM(com_registry_add)(ICoRegistry *registry)
+RPC_SYM(com_registry_add)(ICoRegistry *registry)
 {
 	com_result_t r;
 	

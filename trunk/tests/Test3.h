@@ -37,13 +37,13 @@
 
 # include "ITester3.h"
 
-DECLARE_CLASS(Test2)
+DECLARE_CLASS(Test3)
 {
-	DECLARE_IMPLEMENTS(Test2, ITester2);
+	DECLARE_IMPLEMENTS(Test3, ITester3);
 	uint32_t refcount;
 	int foo;
 };
 
-COM_EXTERNC com_result_t new_Test2(IUnknown *outer, com_rclsid_t riid, void **out, int defval);
+RPC_EXTERNC com_result_t new_Test3(IUnknown *outer, com_rclsid_t riid, void **out, int defval);
 
 #endif /* !TEST3_H_ */

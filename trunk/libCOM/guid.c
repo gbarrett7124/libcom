@@ -43,10 +43,10 @@
 #include "COM/IClassFactory.h"
 #include "COM/IMalloc.h"
 
-const com_guid_t GUID_NULL = { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 }};
+const com_guid_t RPC_SYM(GUID_NULL) = { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 }};
 
 com_result_t
-COM_SYM(com_guid_generate)(com_guid_t *out, com_guidgen_t flags)
+RPC_SYM(com_guid_generate)(com_guid_t *out, com_guidgen_t flags)
 {
 	unsigned32 status;
 	guid_uuid_t *u = (guid_uuid_t *) out;
@@ -58,7 +58,7 @@ COM_SYM(com_guid_generate)(com_guid_t *out, com_guidgen_t flags)
 }
 
 com_result_t
-COM_SYM(com_guid_to_string)(const com_guid_t *guid, char *buf, size_t buflen, com_guidstr_t flags)
+RPC_SYM(com_guid_to_string)(const com_guid_t *guid, char *buf, size_t buflen, com_guidstr_t flags)
 {
 	char tmp[40];
 	unsigned char *p;

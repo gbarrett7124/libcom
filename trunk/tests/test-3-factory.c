@@ -43,7 +43,7 @@
 #include "Test3Factory.h"
 #include "test-3-guids.h"
 
-DEFINE_GENERIC_FACTORY(Test2Factory, { return new_Test2(outer, riid, out, 1234); })
+DEFINE_GENERIC_FACTORY(Test3Factory, { return new_Test3(outer, riid, out, 1234); })
 
 com_result_t __stdcall
 com_self_register(const char *pathname, com_regflags_t flags)
@@ -54,7 +54,7 @@ com_self_register(const char *pathname, com_regflags_t flags)
 	rco.modulepath = pathname;
 	rco.flags = flags;
 	rco.ctx = COM_CTX_INPROC_SERVER;
-	rco.clsid = &CLSID_Test2;
+	rco.clsid = &CLSID_Test3;
 	rco.contractid = "@com.googlecode.libcom/tests/test-3-server;1";
 	return com_register(&rco, NULL);
 }

@@ -1,0 +1,107 @@
+cpp_quote("/* @(#) $Id$ */");
+cpp_quote("");
+cpp_quote("/*");
+cpp_quote(" * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Mo McRoberts.");
+cpp_quote(" *");
+cpp_quote(" * Redistribution and use in source and binary forms, with or without");
+cpp_quote(" * modification, are permitted provided that the following conditions");
+cpp_quote(" * are met:");
+cpp_quote(" * 1. Redistributions of source code must retain the above copyright");
+cpp_quote(" *    notice, this list of conditions and the following disclaimer.");
+cpp_quote(" * 2. Redistributions in binary form must reproduce the above copyright");
+cpp_quote(" *    notice, this list of conditions and the following disclaimer in the");
+cpp_quote(" *    documentation and/or other materials provided with the distribution.");
+cpp_quote(" * 3. The names of the author(s) of this software may not be used to endorse");
+cpp_quote(" *    or promote products derived from this software without specific prior");
+cpp_quote(" *    written permission.");
+cpp_quote(" *");
+cpp_quote(" * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,");
+cpp_quote(" * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY");
+cpp_quote(" * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL");
+cpp_quote(" * AUTHORS OF THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,");
+cpp_quote(" * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED");
+cpp_quote(" * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR");
+cpp_quote(" * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF");
+cpp_quote(" * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING");
+cpp_quote(" * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS");
+cpp_quote(" * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.");
+cpp_quote(" */");
+cpp_quote("");
+
+import "COM/IUnknown.idl";
+import "COM/IMalloc.idl";
+import "COM/ICoRegistry.idl";
+
+[local,pointer_default(ptr)]
+interface CoAPI
+{
+	typedef enum com_regflags_enum
+	{
+		COM_REG_SINGLEUSE = 0,
+		COM_REG_MULTIPLEUSE = (1<<0),
+		COM_REG_MULTI_SEPARATE = (1<<1),
+		COM_REG_SUSPENDED = (1<<2),
+		COM_REG_SURROGATE = (1<<3),
+
+		COM_REG_PERSISTENT = (1<<30), /* Publish registration information, if possible */
+		COM_REG_ALLUSERS = (1<<31) /* Publish registration globally, if possible */
+	} com_regflags_t;
+
+	typedef enum com_guidgen_enum
+	{
+		COM_GUIDGEN_DEFAULT = 0,
+		COM_GUIDGEN_TIME = 1,
+		COM_GUIDGEN_RANDOM = 2
+	} com_guidgen_t;
+
+	typedef enum com_guidstr_enum
+	{
+		COM_GUIDSTR_DEFAULT = 0,
+		COM_GUIDSTR_UPPERCASE = (1<<0),
+		COM_GUIDSTR_BRACES = (1<<1)
+	} com_guidstr_t;
+
+/*	typedef com_result_t (*com_getclassobject_t)(com_rclsid_t clsid, com_riid_t riid, void **out); */
+
+	struct com_rco_struct
+	{
+		const com_clsid_t *clsid;
+		IUnknown *factory;
+		com_context_t ctx;
+		com_regflags_t flags;
+		const char *displayname;
+		const char *contractid;
+		const char *modulepath;
+	};
+
+	struct com_server_struct
+	{
+		int dummy;
+	};
+
+	/* Match member names in Microsoft's MULTI_QI structure */
+	struct com_multiqi_struct
+	{
+		const com_iid_t *pIID;
+		IUnknown *pItf;
+		com_result_t hr;
+	};
+
+	com_result_t com_init(const char *rdn);
+	com_result_t com_shutdown(void);
+
+	com_result_t com_registry_add(ICoRegistry *registry);
+	com_result_t com_registry_remove(ICoRegistry *registry);
+
+	com_result_t com_getclass(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
+	com_result_t com_register(com_rco_t *rcox, uint32_t *key);
+	com_result_t com_register_factory(com_rclsid_t clsid, com_context_t context, const char *contractid, IUnknown *factory, uint32_t *key);
+	com_result_t com_register_inprocsrv(com_context_t context, const char *path, uint32_t *key);
+	com_result_t com_unregister(uint32_t key);
+
+	com_result_t com_guid_generate(com_guid_t *out, com_guidgen_t flags);
+	com_result_t com_guid_to_string(const com_guid_t *guid, char *buf, com_size_t buflen, com_guidstr_t options);
+
+	IMalloc *com_allocator(void);
+
+}

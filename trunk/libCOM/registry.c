@@ -64,7 +64,7 @@ static com_result_t com__resume(com_rco_t *rco);
 
 /* FIXME: Support for COM_REG_SUSPENDED */
 com_result_t
-COM_SYM(com_register)(com_rco_t *rcox, uint32_t *key)
+RPC_SYM(com_register)(com_rco_t *rcox, uint32_t *key)
 {
 	ICoRegistry **providers;
 	size_t nproviders, c;
@@ -164,7 +164,7 @@ COM_SYM(com_register)(com_rco_t *rcox, uint32_t *key)
 }
 
 com_result_t
-COM_SYM(com_unregister)(uint32_t key)
+RPC_SYM(com_unregister)(uint32_t key)
 {
 /*	size_t c;
 	
@@ -188,7 +188,7 @@ COM_SYM(com_unregister)(uint32_t key)
 }
 
 com_result_t
-COM_SYM(com_unregister_clsid)(com_rclsid_t clsid)
+RPC_SYM(com_unregister_clsid)(com_rclsid_t clsid)
 {
 /*	size_t c;
 	
@@ -210,7 +210,7 @@ COM_SYM(com_unregister_clsid)(com_rclsid_t clsid)
 }
 
 com_result_t
-COM_SYM(com_getclass)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out)
+RPC_SYM(com_getclass)(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out)
 {
 	com_result_t r;
 	size_t nproviders, c;

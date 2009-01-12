@@ -1,0 +1,65 @@
+cpp_quote("/* @(#) $Id$ */");
+cpp_quote("");
+cpp_quote("/*");
+cpp_quote(" * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Mo McRoberts.");
+cpp_quote(" *");
+cpp_quote(" * Redistribution and use in source and binary forms, with or without");
+cpp_quote(" * modification, are permitted provided that the following conditions");
+cpp_quote(" * are met:");
+cpp_quote(" * 1. Redistributions of source code must retain the above copyright");
+cpp_quote(" *    notice, this list of conditions and the following disclaimer.");
+cpp_quote(" * 2. Redistributions in binary form must reproduce the above copyright");
+cpp_quote(" *    notice, this list of conditions and the following disclaimer in the");
+cpp_quote(" *    documentation and/or other materials provided with the distribution.");
+cpp_quote(" * 3. The names of the author(s) of this software may not be used to endorse");
+cpp_quote(" *    or promote products derived from this software without specific prior");
+cpp_quote(" *    written permission.");
+cpp_quote(" *");
+cpp_quote(" * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,");
+cpp_quote(" * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY");
+cpp_quote(" * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL");
+cpp_quote(" * AUTHORS OF THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,");
+cpp_quote(" * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED");
+cpp_quote(" * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR");
+cpp_quote(" * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF");
+cpp_quote(" * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING");
+cpp_quote(" * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS");
+cpp_quote(" * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.");
+cpp_quote(" */");
+cpp_quote("");
+
+import "COM/IUnknown.idl";
+import "COM/IMalloc.idl";
+import "COM/ICoRegistry.idl";
+import "COM/api.idl";
+
+[local,pointer_default(ptr)]
+interface CoCompat
+{
+	typedef void *LPVOID;
+	
+	com_result_t CoInitialize(LPVOID reserved);
+	com_result_t CoInitializeEx(LPVOID reserved, uint32_t flags);
+	com_result_t CoRegisterClassObject(com_rclsid_t clsid, IUnknown *factory, com_context_t context, com_regflags_t flags, uint32_t *key);
+	com_result_t CoRevokeClassObject(uint32_t key);
+	com_result_t CoGetClassObject(com_rclsid_t clsid, com_context_t context, com_server_t *server, com_riid_t riid, void **out);
+	com_result_t CoCreateInstanceEx(com_rclsid_t clsid, IUnknown *outer, com_context_t context, com_server_t *server, com_size_t intfcount, com_multiqi_t *intf);
+	com_result_t CoCreateInstance(com_rclsid_t clsid, IUnknown *outer, com_context_t ctx, com_riid_t riid, void **out);
+
+	com_result_t CoGetMalloc(uint32_t context, IMalloc **out);
+	void *CoTaskMemAlloc(com_size_t size);
+	void CoTaskMemFree(LPVOID optr);
+	void *CoTaskMemRealloc(LPVOID optr, com_size_t newsize);
+	
+cpp_quote("/* COINIT values - COINIT_MULITHREADED is all we support */");
+cpp_quote("#  define COINIT_MULTITHREADED         0");
+cpp_quote("");
+cpp_quote("/* CLSCTX values */");
+cpp_quote("#  define CLSCTX_INPROC_SERVER         COM_CTX_INPROC_SERVER");
+cpp_quote("#  define CLSCTX_INPROC_HANDLER        COM_CTX_INPROC_HANDLER");
+cpp_quote("#  define CLSCTX_LOCAL_SERVER          COM_CTX_LOCAL_SERVER");
+cpp_quote("#  define CLSCTX_REMOTE_SERVER         COM_CTX_REMOTE_SERVER");
+cpp_quote("");
+cpp_quote("/* Other aliases */");
+cpp_quote("#  define IsEqualGuid(a, b)            com_guid_equal(a, b)");
+}

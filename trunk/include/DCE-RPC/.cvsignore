@@ -4,4 +4,5 @@ nbase.h
 lbase.h
 uuid.h
 rpc.h
+decl.h
 
